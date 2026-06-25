@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI実装度診断 | Edutex</title>
+  <meta name="description" content="大企業向けに、業務量・データ所在・権限・リスク・ROI・AI適用難易度まで可視化するEdutex社製AI実装度診断アプリ。" />
+  <meta property="og:title" content="AI実装度診断 | Edutex" />
+  <meta property="og:description" content="研修前のスキル診断ではなく、業務・データ・権限・リスク・ROI・実装難易度を見て、90日PoCと講座提案へ接続します。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="./assets/og-ai-readiness.jpg" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="AI実装度診断トップへ">
+      <span class="brand-mark">E</span>
+      <span><strong>AI実装度診断</strong><small>Edutex Corporate AI Implementation Check</small></span>
+    </a>
+    <nav class="top-nav" aria-label="主要メニュー">
+      <a href="#diagnosis">診断</a>
+      <a href="#logic">評価軸</a>
+      <a href="#packages">提案メニュー</a>
+      <a href="#cases">企業別導線</a>
+      <a class="nav-cta" href="#diagnosis">診断開始</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero section-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Edutex社製 · AI Implementation Readiness · 90 Day PoC</p>
+        <h1>大企業のAI投資を、<br />成果物に変換する診断。</h1>
+        <p class="lead">従来の「AIスキル診断」から、業務量・データ所在・権限・リスク・ROI・AI適用難易度まで見る<strong>AI実装度診断</strong>へ拡張。診断結果から、講座提案、90日PoC、AI実装受託まで営業導線をつなぎます。</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#diagnosis">AI実装度を診断する</a>
+          <button class="ghost-btn" type="button" data-scroll-target="#packages">提案メニューを見る</button>
+        </div>
+        <div class="hero-metrics" aria-label="診断の特徴">
+          <div><strong>7</strong><span>実装評価軸</span></div>
+          <div><strong>28</strong><span>設問</span></div>
+          <div><strong>90</strong><span>日PoC導線</span></div>
+        </div>
+      </div>
+      <div class="hero-visual" aria-label="AI実装度診断のイメージ">
+        <div class="photo-stack">
+          <figure class="photo-card photo-hero"><figcaption>Executive AI Roadmap</figcaption></figure>
+          <figure class="photo-card photo-dashboard"><figcaption>ROI / Risk Dashboard</figcaption></figure>
+          <figure class="photo-card photo-office"><figcaption>AI Agent PoC</figcaption></figure>
+        </div>
+        <div class="floating-panel"><span class="pulse"></span><div><strong>実装度スコア</strong><small>業務・データ・ROIを統合評価</small></div></div>
+      </div>
+    </section>
+
+    <section class="section stats-strip" aria-label="アプリの特徴">
+      <article><span>01</span><h2>スキルではなく実装を診る</h2><p>個人の理解度ではなく、業務量、データ、権限、リスク、ROI、適用難易度、推進体制を同時に評価します。</p></article>
+      <article><span>02</span><h2>購買部門に通る材料を作る</h2><p>PoC候補、効果見込み、リスク論点、必要体制、概算メニューを診断結果として表示します。</p></article>
+      <article><span>03</span><h2>講座から実装受託へ接続</h2><p>AI講座、部門WS、90日PoC、MVP開発、CoE/LLMOpsまで段階的な提案に接続します。</p></article>
+    </section>
+
+    <section id="diagnosis" class="section diagnostic-shell">
+      <div class="section-heading compact">
+        <p class="eyebrow">Assessment</p>
+        <h2>AI実装度診断</h2>
+        <p>28問・約5分。大企業向けに、研修前の関心確認ではなく、実装テーマ化・稟議化・PoC化に必要な情報を整理します。</p>
+      </div>
+      <div class="app-layout">
+        <aside class="diagnosis-sidebar" aria-label="診断進捗と企業情報">
+          <div class="progress-card">
+            <div class="progress-top"><span>回答進捗</span><strong id="progressText">0%</strong></div>
+            <div class="progress-bar" aria-hidden="true"><span id="progressBar"></span></div>
+            <p id="progressHint">会社情報を入力し、設問に回答してください。</p>
+          </div>
+          <div class="profile-card">
+            <label for="companyName">会社名 / 部署名</label>
+            <input id="companyName" placeholder="例：株式会社〇〇 DX推進室" autocomplete="organization" />
+            <label for="industry">業種</label>
+            <select id="industry">
+              <option value="未選択">選択してください</option>
+              <option>製造</option><option>建設・不動産</option><option>金融・保険</option><option>商社・卸売</option><option>小売・流通</option><option>IT・通信</option><option>教育・人材</option><option>自治体・公共</option><option>その他</option>
+            </select>
+            <label for="employeeSize">従業員規模</label>
+            <select id="employeeSize"><option value="未選択">選択してください</option><option>300名未満</option><option>300〜1,000名</option><option>1,001〜5,000名</option><option>5,001〜10,000名</option><option>10,001名以上</option></select>
+            <label for="targetCase">近い提案対象</label>
+            <select id="targetCase"><option>一般大企業</option><option>レスター型：AI×IoT外販/SI提案</option><option>大和ハウス型：建設・不動産・物件管理DX</option><option>オリックス型：AI-OCR/文書DX外販</option><option>ifLink会員型：AI×IoT共創PoC</option></select>
+          </div>
+          <div class="sidebar-note"><strong>診断後の出力</strong><p>実装度スコア、7軸レーダー、優先PoCテーマ、推奨講座・価格メニュー、90日ロードマップ、稟議用サマリーを表示します。</p></div>
+        </aside>
+        <form id="assessmentForm" class="question-list" novalidate>
+          <div id="questionsContainer"></div>
+          <div class="form-actions">
+            <button type="button" id="resetBtn" class="ghost-btn">リセット</button>
+            <button type="submit" class="primary-btn">診断結果を見る</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="preview" class="section result-section hidden" aria-live="polite">
+      <div class="section-heading compact"><p class="eyebrow">Result</p><h2>診断結果</h2><p>AI実装の現在地、優先テーマ、推奨提案、90日で作る成果物を表示します。</p></div>
+      <div id="resultRoot"></div>
+    </section>
+
+    <section id="logic" class="section logic-section">
+      <div class="section-heading"><p class="eyebrow">Evaluation Design</p><h2>大企業向けAI実装度診断の7軸</h2><p>「AIが使えるか」ではなく「投資判断できるか」を評価する構造です。</p></div>
+      <div class="logic-grid seven-grid">
+        <article><span class="logic-icon">01</span><h3>業務量</h3><p>削減余地、作業頻度、対象人数、部門横展開の大きさ。</p></article>
+        <article><span class="logic-icon">02</span><h3>データ所在</h3><p>文書、FAQ、営業資料、基幹データ、現場データの所在と利用可否。</p></article>
+        <article><span class="logic-icon">03</span><h3>権限</h3><p>利用ルール、承認者、API/クラウド接続、情報システム部門の関与。</p></article>
+        <article><span class="logic-icon">04</span><h3>リスク</h3><p>個人情報、機密、著作権、説明責任、ログ、監査、ガバナンス。</p></article>
+        <article><span class="logic-icon">05</span><h3>ROI</h3><p>削減時間、品質、売上貢献、外販化、KPIの測定可能性。</p></article>
+        <article><span class="logic-icon">06</span><h3>適用難易度</h3><p>RAG、AIエージェント、業務自動化、開発AIの実装難易度。</p></article>
+        <article><span class="logic-icon">07</span><h3>推進体制</h3><p>経営、人事、情シス、事業部、現場、法務の巻き込み度。</p></article>
+      </div>
+    </section>
+
+    <section id="packages" class="section packages-section">
+      <div class="section-heading"><p class="eyebrow">Proposal Menu</p><h2>診断結果から出し分ける提案メニュー</h2><p>入口は安く、診断は有償。講座費ではなく、営業・開発・外販化の投資として見せます。</p></div>
+      <div class="package-grid" id="packageGrid"></div>
+    </section>
+
+    <section id="cases" class="section cases-section">
+      <div class="section-heading"><p class="eyebrow">Enterprise Sales Route</p><h2>企業別の営業導線</h2><p>汎用講座ではなく、相手の現在地点に合わせたAI実装テーマとして提示します。</p></div>
+      <div class="case-grid" id="caseGrid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><div><strong>Edutex社製 AI実装度診断</strong><p>GitHub Pages ready / Corporate AI Implementation Check</p></div><a href="#top">ページ上部へ</a></footer>
+  <script src="./script.js"></script>
+</body>
+</html>
