@@ -3,286 +3,325 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Edutex AI実装度診断 | Enterprise AI Implementation Readiness</title>
-  <meta name="description" content="EdutexのAI実装度診断。業務量、データ、権限、リスク、ROI、AI適用難易度を可視化し、90日PoCからMVP、CoE運用までの次アクションを提示します。" />
-  <meta property="og:title" content="Edutex AI実装度診断" />
-  <meta property="og:description" content="AI投資を成果物へ変換するための、大企業向け実装 readiness 診断。" />
+  <title>AI実装度チェック | AI Readiness Canvas</title>
+  <meta name="description" content="自社のAI実装度を可視化し、次に強化すべき業務・人材・ルール・実装テーマを整理する診断ツール。" />
+  <meta property="og:title" content="AI実装度チェック | AI Readiness Canvas" />
+  <meta property="og:description" content="AI活用の現在地を可視化し、次に強化すべき実践テーマと学習プランを整理します。" />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="./assets/hero-executive-briefing.jpg" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <meta property="og:image" content="./ai-diagnostic-app-final-photo-refresh/assets/og-ai-readiness.jpg" />
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="page-glow glow-a" aria-hidden="true"></div>
-  <div class="page-glow glow-b" aria-hidden="true"></div>
-  <div class="page-grid" aria-hidden="true"></div>
-
+  <div class="noise" aria-hidden="true"></div>
   <header class="site-header">
-    <a class="brand" href="#top" aria-label="Edutex AI実装度診断トップへ">
-      <span class="brand-mark">E</span>
-      <span class="brand-copy">
-        <strong>Edutex AI実装度診断</strong>
-        <small>Enterprise AI Implementation Readiness</small>
-      </span>
+    <a class="brand" href="#top" aria-label="AI実装度チェックトップへ">
+      <span class="brand-mark">AI</span>
+      <span><strong>AI実装度チェック</strong><small>AI Readiness Canvas</small></span>
     </a>
     <nav class="top-nav" aria-label="主要メニュー">
-      <a href="#scenes">活用シーン</a>
-      <a href="#experience">診断で分かること</a>
       <a href="#diagnosis">診断</a>
-      <a href="#programs">提案メニュー</a>
-      <a href="#flow">導入ステップ</a>
-      <a class="nav-cta" href="#diagnosis">診断を始める</a>
+      <a href="#logic">診断の見方</a>
+      <a href="#courses">実践プログラム</a>
+      <a href="#application-guide">結果の活用</a>
+      <a class="nav-cta" href="#diagnosis">チェックを開始</a>
     </nav>
   </header>
 
   <main id="top">
-    <section class="hero shell shell-wide">
+    <section class="hero section-grid">
       <div class="hero-copy">
-        <p class="eyebrow">Edutex enterprise diagnostic</p>
-        <h1>AI投資を、<br />成果物へ変換する診断。</h1>
-        <p class="lead">研修で終わらせず、業務量、データ所在、権限、リスク、ROI、AI適用難易度まで一気に可視化。診断結果から、そのまま部門WS、90日PoC、MVP、CoE運用まで接続できる設計にしています。</p>
-        <div class="hero-tags" aria-label="診断対象">
-          <span>RAG / FAQ Bot</span>
-          <span>提案書生成</span>
-          <span>部門横断PoC</span>
-          <span>AIガバナンス</span>
-        </div>
+        <div class="eyebrow">AI readiness · Productivity · Implementation · Governance</div>
+        <h1>自社のAI実装度を、<br />見える化する。</h1>
+        <p class="lead">業務改善、AI実装、収益化、安全利用、人材育成の現在地を約3分で整理。次に強化すべきテーマと、90日で進める実践プランを確認できます。</p>
         <div class="hero-actions">
-          <a class="primary-btn" href="#diagnosis">AI実装度を診断する</a>
-          <button class="ghost-btn" type="button" data-scroll-target="#scenes">活用シーンを見る</button>
+          <a class="primary-btn" href="#diagnosis">チェックを開始する</a>
+          <button class="ghost-btn" type="button" data-scroll-target="#preview">結果イメージを見る</button>
         </div>
-        <div class="metric-row" aria-label="診断の特徴">
-          <article>
-            <strong>24</strong>
-            <span>設問</span>
-            <p>約5分で完了</p>
-          </article>
-          <article>
-            <strong>6</strong>
-            <span>評価軸</span>
-            <p>稟議に必要な論点を網羅</p>
-          </article>
-          <article>
-            <strong>90</strong>
-            <span>日PoC導線</span>
-            <p>実装プランまで接続</p>
-          </article>
+        <div class="hero-metrics" aria-label="診断で可視化する項目">
+          <div><strong>5</strong><span>重点スコア</span></div>
+          <div><strong>3</strong><span>推奨講座</span></div>
+          <div><strong>90</strong><span>日プラン</span></div>
         </div>
       </div>
-
-      <div class="hero-stage" aria-label="AI実装度診断のイメージ">
-        <figure class="hero-photo-card">
-          <img src="./assets/hero-executive-briefing.jpg" alt="企業の会議室でAI導入計画を議論する経営チーム" />
-        </figure>
-        <div class="hero-dashboard glass-panel">
-          <div class="hero-dashboard-head">
-            <span>Readiness snapshot</span>
-            <strong>82</strong>
-          </div>
-          <div class="hero-bars" aria-hidden="true">
-            <i style="height: 78%"></i>
-            <i style="height: 68%"></i>
-            <i style="height: 84%"></i>
-            <i style="height: 62%"></i>
-            <i style="height: 72%"></i>
-            <i style="height: 66%"></i>
-          </div>
-          <div class="hero-dashboard-grid">
-            <span>業務量</span>
-            <span>データ</span>
-            <span>権限</span>
-            <span>リスク</span>
-            <span>ROI</span>
-            <span>難易度</span>
-          </div>
+      <div class="hero-visual" aria-label="AI実装度チェックのビジュアルプレビュー">
+        <div class="photo-stack">
+          <figure class="photo-card photo-hero">
+            <figcaption>AI実装ロードマップ</figcaption>
+          </figure>
+          <figure class="photo-card photo-dashboard">
+            <figcaption>業務改善ダッシュボード</figcaption>
+          </figure>
+          <figure class="photo-card photo-office">
+            <figcaption>AIエージェント設計</figcaption>
+          </figure>
         </div>
-        <aside class="hero-callout glass-panel">
-          <p>診断後に出るもの</p>
-          <strong>PoC候補 / ROI仮説 / 優先アクション / 導入ロードマップ</strong>
-        </aside>
-      </div>
-    </section>
-
-    <section id="scenes" class="section shell">
-      <div class="section-heading">
-        <p class="eyebrow">Use scenes</p>
-        <h2>活用シーンが直感的に見える構成へ</h2>
-        <p>現場利用、テーマ選定、ガバナンス整備までを、写真とイラストで一目で把握できるようにしました。</p>
-      </div>
-      <div id="sceneGrid" class="scene-grid"></div>
-    </section>
-
-    <section id="experience" class="section shell">
-      <div class="section-heading">
-        <p class="eyebrow">What this reveals</p>
-        <h2>診断で分かること</h2>
-        <p>いま足りないのがスキルなのか、データなのか、承認なのかを曖昧にせず、次の提案に必要な材料へ落とし込みます。</p>
-      </div>
-      <div class="story-panel">
-        <figure class="story-visual">
-          <img src="./assets/scene-governance-journey.png" alt="AI導入の診断、ガバナンス、ROI、運用までを示すイラスト" />
-        </figure>
-        <div class="story-points">
-          <article class="story-point">
-            <span>01</span>
-            <div>
-              <h3>対象業務と削減余地</h3>
-              <p>どの部門に反復作業が集中しているか、PoCに向く業務は何かを棚卸しします。</p>
-            </div>
-          </article>
-          <article class="story-point">
-            <span>02</span>
-            <div>
-              <h3>データ、権限、リスクの詰まり所</h3>
-              <p>SharePoint、CRM、Excel、FAQ、監査ログなど、実装の障害になる箇所を先回りで特定します。</p>
-            </div>
-          </article>
-          <article class="story-point">
-            <span>03</span>
-            <div>
-              <h3>役員説明に使える次アクション</h3>
-              <p>有償診断、部門WS、90日PoC、MVP開発のどこから入るべきかを結果画面でそのまま提示します。</p>
-            </div>
-          </article>
+        <div class="floating-panel">
+          <span class="pulse"></span>
+          <div><strong>AI実装度</strong><small>Readiness / 82</small></div>
         </div>
       </div>
     </section>
 
-    <section id="diagnosis" class="section shell">
+    <section class="section stats-strip" aria-label="アプリの特徴">
+      <article>
+        <span>01</span>
+        <h2>AI実装度を可視化</h2>
+        <p>業務負荷、属人化、データ整備、安全利用、推進体制をスコア化し、次に整えるべき領域を明確にします。</p>
+      </article>
+      <article>
+        <span>02</span>
+        <h2>強化テーマを整理</h2>
+        <p>収益化・業務改善・AI実装・ガバナンス・基礎理解のどこから着手すべきかを表示します。</p>
+      </article>
+      <article>
+        <span>03</span>
+        <h2>結果を社内検討に活用</h2>
+        <p>診断結果、希望テーマ、連絡先をフォーム連携し、社内共有や次回打ち合わせの材料として活用できます。</p>
+      </article>
+    </section>
+
+    <section id="diagnosis" class="section diagnostic-shell">
       <div class="section-heading compact">
-        <p class="eyebrow">Assessment</p>
-        <h2>AI実装度診断</h2>
-        <p>24問、約5分。企業プロフィールと6軸の設問から、いま着手すべきAI導入テーマと提案導線を可視化します。</p>
+        <div class="eyebrow">Assessment</div>
+        <h2>AI実装度チェック</h2>
+        <p>15問・約3分。1問ずつ回答すると自動で次の設問へ進みます。回答は自動保存されるため、途中で離れても続きから再開できます。</p>
       </div>
 
-      <div class="assessment-shell">
-        <aside class="assessment-sidebar" aria-label="診断サイドバー">
-          <section class="progress-card glass-panel">
-            <div class="progress-head">
-              <div>
-                <span class="kicker">進捗</span>
-                <strong id="progressText">0%</strong>
-              </div>
-              <small>自動保存</small>
-            </div>
-            <div class="progress-bar" aria-hidden="true">
-              <span id="progressBar"></span>
-            </div>
-            <p id="progressHint">会社情報を入力して最初の設問から回答してください。</p>
-            <div id="profileSummary" class="profile-summary"></div>
-          </section>
-
-          <section class="profile-card glass-panel">
-            <h3>企業プロフィール</h3>
+      <div class="app-layout">
+        <aside class="diagnosis-sidebar" aria-label="診断進捗">
+          <div class="progress-card">
+            <div class="progress-top"><span>進捗</span><strong id="progressText">0%</strong></div>
+            <div class="progress-bar" aria-hidden="true"><span id="progressBar"></span></div>
+            <p id="progressHint">最初の設問から回答してください。</p>
+          </div>
+          <div class="profile-card">
             <label for="companyName">会社名 / 部署名</label>
-            <input id="companyName" type="text" placeholder="例: 株式会社〇〇 DX推進室" autocomplete="organization" />
-
+            <input id="companyName" placeholder="例：株式会社〇〇 DX推進室" autocomplete="organization" />
             <label for="industry">業種</label>
             <select id="industry">
               <option value="未選択">選択してください</option>
               <option>製造</option>
               <option>小売・流通</option>
               <option>不動産・建設</option>
-              <option>金融・保険</option>
-              <option>商社・卸</option>
-              <option>IT・通信</option>
               <option>教育・人材</option>
+              <option>金融・保険</option>
               <option>医療・介護</option>
               <option>自治体・公共</option>
+              <option>IT・通信</option>
               <option>その他</option>
             </select>
-
             <label for="employeeSize">従業員規模</label>
             <select id="employeeSize">
               <option value="未選択">選択してください</option>
-              <option>〜300名</option>
+              <option>1〜30名</option>
+              <option>31〜100名</option>
+              <option>101〜300名</option>
               <option>301〜1,000名</option>
-              <option>1,001〜5,000名</option>
-              <option>5,001〜10,000名</option>
-              <option>10,001名以上</option>
+              <option>1,001名以上</option>
             </select>
-
-            <label for="targetDept">主な対象部門</label>
-            <select id="targetDept">
-              <option value="未選択">選択してください</option>
-              <option>営業・法人営業</option>
-              <option>情報システム / DX</option>
-              <option>人事・研修</option>
-              <option>開発・技術</option>
-              <option>管理・バックオフィス</option>
-              <option>現場・店舗・工場</option>
-              <option>全社横断</option>
-            </select>
-
-            <label for="goalFocus">今回狙いたい成果</label>
-            <select id="goalFocus">
-              <option value="未選択">選択してください</option>
-              <option>まずは現状把握と優先順位付け</option>
-              <option>部門WSからPoCテーマを絞りたい</option>
-              <option>90日PoCの稟議材料を作りたい</option>
-              <option>MVP / 本実装へつなげたい</option>
-            </select>
-          </section>
-
-          <section class="sidebar-note glass-panel">
-            <h3>診断後にそのまま使えるもの</h3>
-            <ul>
-              <li>優先アクション2件</li>
-              <li>推奨PoC / 支援メニュー</li>
-              <li>役員向けサマリー</li>
-              <li>90日ロードマップ</li>
-            </ul>
-          </section>
+          </div>
+          <div class="sidebar-note">
+            <strong>チェック後の活用</strong>
+            <p>結果画面で推奨プログラムと90日プランを確認できます。必要に応じて結果を送信し、社内検討や実施方法の確認に使えます。</p>
+          </div>
         </aside>
 
-        <form id="assessmentForm" class="assessment-form" novalidate>
-          <div id="questionsContainer" class="question-groups"></div>
+        <form id="assessmentForm" class="question-list" novalidate>
+          <div class="wizard">
+            <div class="wizard-head">
+              <span class="wizard-counter" id="wizardCounter">設問 1 / 15</span>
+              <div class="wizard-dots" id="wizardDots" aria-label="設問ナビゲーション"></div>
+            </div>
+            <div id="questionsContainer"></div>
+            <div class="wizard-nav">
+              <button type="button" id="prevBtn" class="ghost-btn">← 前の設問</button>
+              <span class="wizard-keys" aria-hidden="true">1〜5キーで選択 / ←→で移動</span>
+              <button type="button" id="nextBtn" class="ghost-btn">次の設問 →</button>
+            </div>
+          </div>
           <div class="form-actions">
-            <button id="resetBtn" type="button" class="ghost-btn">リセット</button>
-            <button type="submit" class="primary-btn">診断結果を見る</button>
+            <button type="button" id="resetBtn" class="ghost-btn">リセット</button>
+            <button type="submit" id="submitDiagnosisBtn" class="primary-btn">診断結果を見る</button>
           </div>
         </form>
       </div>
     </section>
 
-    <section id="preview" class="section shell result-section hidden" aria-live="polite">
+    <section id="preview" class="section result-section hidden" aria-live="polite">
       <div class="section-heading compact">
-        <p class="eyebrow">Result</p>
+        <div class="eyebrow">Result</div>
         <h2>診断結果</h2>
-        <p>実装 readiness、優先アクション、PoC候補、役員説明用のひと言までまとめて表示します。</p>
+        <p>AI活用の現在地・強化テーマ・次の実践ステップを可視化します。</p>
       </div>
       <div id="resultRoot"></div>
     </section>
 
-    <section id="programs" class="section shell">
+    <section id="logic" class="section logic-section">
       <div class="section-heading">
-        <p class="eyebrow">Proposal menu</p>
-        <h2>診断結果から接続する提案メニュー</h2>
-        <p>入口は軽く、提案は具体的に。営業導線に使いやすい価格帯と成果物イメージを揃えています。</p>
+        <div class="eyebrow">Readiness design</div>
+        <h2>診断結果の見方</h2>
+        <p>診断結果は「今の状態」「先に整える領域」「次に試す実践テーマ」を分けて表示します。</p>
       </div>
-      <div id="programCatalog" class="program-grid"></div>
+      <div class="logic-grid">
+        <article>
+          <span class="logic-icon">△</span>
+          <h3>現在地の言語化</h3>
+          <p>業務負荷・属人化・データ分散・安全利用の課題を、社内で共有しやすい言葉に整理します。</p>
+        </article>
+        <article>
+          <span class="logic-icon">◎</span>
+          <h3>効果測定の入口化</h3>
+          <p>AI活用を感覚で終わらせず、時間削減・品質向上・売上貢献・安全利用の指標に接続します。</p>
+        </article>
+        <article>
+          <span class="logic-icon">▣</span>
+          <h3>学びの順番を整理</h3>
+          <p>基礎理解、業務改善、実装、収益化、ガバナンスのうち、いま優先すべき順番を表示します。</p>
+        </article>
+      </div>
     </section>
 
-    <section id="flow" class="section shell">
+    <section id="application-guide" class="section application-guide">
       <div class="section-heading">
-        <p class="eyebrow">Engagement path</p>
-        <h2>導入ステップ</h2>
-        <p>診断から本実装までを、商談の次アクションとしてそのまま提案できる流れに整えています。</p>
+        <div class="eyebrow">Result sharing</div>
+        <h2>診断結果を、次のAI実装計画へ</h2>
+        <p>診断結果、希望テーマ、連絡先をGoogleフォームへ送信できます。結果を残すことで、社内共有・日程調整・実施方法の確認がしやすくなります。</p>
       </div>
-      <div id="flowGrid" class="flow-grid"></div>
+      <div class="logic-grid">
+        <article>
+          <span class="logic-icon">01</span>
+          <h3>診断結果を確認</h3>
+          <p>AI実装度、強化テーマ、推奨プログラム、90日アクションを確認します。</p>
+        </article>
+        <article>
+          <span class="logic-icon">02</span>
+          <h3>希望テーマを選択</h3>
+          <p>資料確認、実施方法の確認、社内共有用の見積、自社テーマでの設計などを選べます。</p>
+        </article>
+        <article>
+          <span class="logic-icon">03</span>
+          <h3>フォームで記録</h3>
+          <p>診断サマリーと連絡先をフォーム回答として記録。スプレッドシートで管理できます。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="courses" class="section courses-section">
+      <div class="section-heading">
+        <div class="eyebrow">Practice programs</div>
+        <h2>AI実装度に応じた実践プログラム</h2>
+        <p>診断結果に応じて表示するプログラムです。基礎理解から業務実装、収益化、安全利用まで段階的に選べます。</p>
+      </div>
+      <div id="courseCatalog" class="course-catalog"></div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div>
-      <strong>Edutex AI実装度診断</strong>
-      <p>AI training だけで終わらせず、PoC と MVP まで進めるための readiness check。</p>
+      <strong>AI実装度チェック</strong>
+      <p>AI Readiness Canvas / GitHub Pages ready</p>
     </div>
-    <a href="#top">ページ上部へ戻る</a>
+    <a href="#top">ページ上部へ</a>
   </footer>
+
+  <template id="resultTemplate">
+    <div class="result-grid">
+      <section class="score-hero">
+        <div class="score-ring" id="urgencyRing"><span id="urgencyScore">0</span></div>
+        <div>
+          <div class="eyebrow">AI Readiness Score</div>
+          <h3 id="resultTitle">AI実装度スコア</h3>
+          <p id="resultSummary"></p>
+          <div class="result-badges" id="resultBadges"></div>
+        </div>
+      </section>
+      <section class="radar-card">
+        <canvas id="radarCanvas" width="520" height="360" aria-label="診断スコアのレーダーチャート"></canvas>
+        <div class="radar-legend" id="radarLegend"></div>
+      </section>
+    </div>
+    <div class="risk-message" id="riskMessage"></div>
+    <div class="kpi-grid" id="kpiGrid"></div>
+    <div class="recommendation-block">
+      <div class="section-heading compact align-left">
+        <div class="eyebrow">Recommended practice path</div>
+        <h2>推奨実践プログラム TOP3</h2>
+        <p>スコアに基づき、最初に整えるべきテーマと次に展開する実践プログラムを提示します。</p>
+      </div>
+      <div id="recommendations" class="recommendations"></div>
+    </div>
+    <div class="roadmap-block">
+      <div class="section-heading compact align-left">
+        <div class="eyebrow">90 days action</div>
+        <h2>90日アクションプラン</h2>
+      </div>
+      <div id="roadmap" class="roadmap"></div>
+    </div>
+    <div id="application" class="application-block">
+      <div class="section-heading compact align-left">
+        <div class="eyebrow">Next step</div>
+        <h2>AI実装プランの共有</h2>
+        <p>診断結果を添えて送信できます。実施方法、対象者、期間、社内共有用の資料確認に活用できます。</p>
+      </div>
+      <form id="applicationForm" class="application-form" novalidate>
+        <div class="form-grid-2">
+          <label>
+            <span>お名前 <b>必須</b></span>
+            <input id="contactName" name="contactName" placeholder="例：山田 太郎" autocomplete="name" required />
+          </label>
+          <label>
+            <span>メールアドレス <b>必須</b></span>
+            <input id="contactEmail" name="contactEmail" type="email" placeholder="example@company.co.jp" autocomplete="email" required />
+          </label>
+          <label>
+            <span>電話番号</span>
+            <input id="contactPhone" name="contactPhone" placeholder="03-0000-0000" autocomplete="tel" />
+          </label>
+          <label>
+            <span>役職 / 部署</span>
+            <input id="contactRole" name="contactRole" placeholder="例：人事部 / DX推進室 / 代表取締役" />
+          </label>
+          <label>
+            <span>確認したい内容 <b>必須</b></span>
+            <select id="requestType" name="requestType" required>
+              <option value="">選択してください</option>
+              <option>資料請求</option>
+              <option>実施方法を確認したい</option>
+              <option>実践プログラムを検討したい</option>
+              <option>社内共有用の見積を確認したい</option>
+              <option>自社テーマで設計したい</option>
+            </select>
+          </label>
+          <label>
+            <span>希望講座</span>
+            <select id="desiredCourse" name="desiredCourse"></select>
+          </label>
+        </div>
+        <label class="full-field">
+          <span>補足・実施したいテーマ</span>
+          <textarea id="applicationNote" name="applicationNote" rows="4" placeholder="例：管理職向けに短時間で実施したい / まずは営業部門でAI活用を試したい / オンデマンドと対面を組み合わせたい"></textarea>
+        </label>
+        <label class="consent-field">
+          <input id="privacyConsent" type="checkbox" required />
+          <span>入力内容と診断結果を、実施方法の確認・日程調整・社内共有用資料作成のために送信することに同意します。</span>
+        </label>
+        <div class="application-summary" id="applicationSummary"></div>
+        <div class="result-actions application-actions">
+          <button id="submitApplicationBtn" class="primary-btn" type="submit">AI実装プランとして送信する</button>
+          <button id="copyApplicationBtn" class="ghost-btn" type="button">送信内容をコピー</button>
+        </div>
+        <p class="form-status" id="formStatus" role="status"></p>
+      </form>
+    </div>
+
+    <div class="result-actions">
+      <button id="copyResultBtn" class="primary-btn" type="button">診断結果をコピー</button>
+      <button id="downloadJsonBtn" class="ghost-btn" type="button">JSON保存</button>
+      <button id="goApplicationBtn" class="primary-btn" type="button">結果を共有する</button>
+      <button id="printBtn" class="ghost-btn" type="button">印刷 / PDF化</button>
+      <button id="retakeBtn" class="ghost-btn" type="button">もう一度診断する</button>
+    </div>
+  </template>
 
   <script src="./script.js"></script>
 </body>

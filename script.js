@@ -1,736 +1,1145 @@
-const STORAGE_KEY = "edutex-ai-readiness-v3";
+const GOOGLE_FORMS_CONFIG = {
+  // Googleフォームと連携する場合は enabled を true にし、フォームの action URL と entry ID を設定してください。
+  // action URL例: https://docs.google.com/forms/d/e/XXXXXXXXXXXX/formResponse
+  enabled: false,
+  formActionUrl: "",
+  fields: {
+    companyName: "entry.0000000000",
+    industry: "entry.0000000001",
+    employeeSize: "entry.0000000002",
+    contactName: "entry.0000000003",
+    contactEmail: "entry.0000000004",
+    contactPhone: "entry.0000000005",
+    contactRole: "entry.0000000006",
+    requestType: "entry.0000000007",
+    desiredCourse: "entry.0000000008",
+    applicationNote: "entry.0000000009",
+    pressureScore: "entry.0000000010",
+    resultLevel: "entry.0000000011",
+    riskDimension: "entry.0000000012",
+    recommendedCourses: "entry.0000000013",
+    diagnosisSummary: "entry.0000000014",
+    resultJson: "entry.0000000015",
+    consent: "entry.0000000016"
+  }
+};
 
-const dimensions = {
-  workload: {
-    label: "業務量・属人化",
-    short: "業務量",
-    intro: "反復作業の量、属人化、横展開余地を見ます。",
-  },
-  data: {
-    label: "データ所在・品質",
-    short: "データ",
-    intro: "文書、FAQ、CRM、Excel、権限付きデータの扱いやすさを見ます。",
-  },
-  authority: {
-    label: "権限・セキュリティ",
-    short: "権限",
-    intro: "承認者、利用ルール、監査ログ、法人管理状態を確認します。",
-  },
-  risk: {
-    label: "リスク・ガバナンス",
-    short: "リスク",
-    intro: "レビュー、法務、個人情報、外販時のリスク整理を見ます。",
-  },
-  roi: {
-    label: "ROI・効果測定",
-    short: "ROI",
-    intro: "削減時間、品質向上、売上貢献、予算化導線を見ます。",
-  },
-  difficulty: {
-    label: "AI適用難易度",
-    short: "難易度",
-    intro: "RAG、業務自動化、PoC着手のしやすさを確認します。",
-  },
+const STORAGE_KEYS = {
+  answers: "aiCheckAnswers",
+  profile: "aiCheckProfile"
 };
 
 const questions = [
-  { id: "w1", dim: "workload", title: "対象業務の処理量はどの程度ありますか", hint: "月間件数、問い合わせ件数、帳票数、提案件数など。", options: ["小さい / 不定期", "一部部門で定常発生", "複数部門で毎週発生", "全社で毎日発生", "大量・高頻度で明確"] },
-  { id: "w2", dim: "workload", title: "業務はどの程度、属人化していますか", hint: "担当者依存、暗黙知、ベテラン依存の強さ。", options: ["ほぼ標準化済み", "一部属人化", "部署ごとにばらつく", "主要業務が属人化", "退職・異動リスクが高い"] },
-  { id: "w3", dim: "workload", title: "AIで置き換えたい反復作業がありますか", hint: "調査、要約、分類、転記、チェック、一次回答など。", options: ["ほぼない", "一部ある", "候補は複数ある", "優先候補が明確", "削減時間も概算済み"] },
-  { id: "w4", dim: "workload", title: "部門横断で同じ課題が発生していますか", hint: "営業、管理、現場、開発、人事などへの横展開可能性。", options: ["単一業務のみ", "一部類似あり", "複数部門で類似", "横展開ニーズあり", "グループ会社展開も可能"] },
-
-  { id: "d1", dim: "data", title: "必要なデータの所在は把握できていますか", hint: "SharePoint、Google Drive、Box、SFA、CRM、FAQ、基幹システムなど。", options: ["不明", "個人PC中心", "部署単位で把握", "主要データは特定済み", "接続候補まで整理済み"] },
-  { id: "d2", dim: "data", title: "データ品質はAI利用に耐えますか", hint: "重複、古い文書、命名規則、版管理、正解データの有無。", options: ["かなり不安", "整備途上", "最低限使える", "主要データは整備済み", "評価データもある"] },
-  { id: "d3", dim: "data", title: "文書・FAQ・ナレッジは検索可能な状態ですか", hint: "RAGや社内Botに利用できる状態か。", options: ["散在している", "一部検索可", "部門内は検索可", "全社横断検索可", "API / 権限連携も可能"] },
-  { id: "d4", dim: "data", title: "社外秘・個人情報の区分は明確ですか", hint: "AI投入可否の判定に必要。", options: ["未整理", "一部のみ整理", "部門ごとに整理", "全社ルールあり", "監査可能な区分あり"] },
-
-  { id: "a1", dim: "authority", title: "AI利用時の権限設計はありますか", hint: "誰が何を見られるか、AIが参照してよい範囲。", options: ["未着手", "個別判断", "部門ルールあり", "全社方針あり", "権限連携まで設計済み"] },
-  { id: "a2", dim: "authority", title: "承認者・責任者は明確ですか", hint: "PoCオーナー、情シス、法務、人事、現場責任者。", options: ["不明", "担当候補のみ", "部門責任者あり", "横断責任者あり", "経営スポンサーあり"] },
-  { id: "a3", dim: "authority", title: "ログ・監査・利用履歴を残せますか", hint: "大企業の本実装で必須になりやすい条件。", options: ["残せない", "一部のみ", "ツール単位で可能", "全社基盤で可能", "監査運用まで可能"] },
-  { id: "a4", dim: "authority", title: "利用環境は法人管理されていますか", hint: "ChatGPT Enterprise、Copilot、Gemini、閉域環境など。", options: ["個人利用中心", "暫定利用", "法人契約あり", "部門展開済み", "全社展開・管理済み"] },
-
-  { id: "r1", dim: "risk", title: "AI利用ガイドラインは整備されていますか", hint: "入力禁止、出力確認、著作権、個人情報、社外利用。", options: ["未整備", "草案あり", "部門ルールあり", "全社ガイドあり", "教育・監査まで実施"] },
-  { id: "r2", dim: "risk", title: "法務・セキュリティレビューは通しやすいですか", hint: "PoC前の稟議障壁。", options: ["かなり難しい", "都度調整", "条件付きで可能", "標準フローあり", "迅速に審査可能"] },
-  { id: "r3", dim: "risk", title: "AI出力の品質保証プロセスはありますか", hint: "人の確認、レビュー基準、二重チェック、評価ログ。", options: ["未定", "個人判断", "簡易レビューあり", "標準レビューあり", "評価基準が明確"] },
-  { id: "r4", dim: "risk", title: "外販・顧客提案に使う場合のリスク整理はありますか", hint: "提案営業や外販化の場面で特に重要。", options: ["未検討", "社内利用のみ", "一部検討", "顧客向け条件あり", "外販テンプレートあり"] },
-
-  { id: "o1", dim: "roi", title: "削減時間・削減コストを概算できますか", hint: "稟議や投資対効果の入口。", options: ["できない", "感覚値のみ", "一部概算可", "主要業務で概算可", "金額換算まで可能"] },
-  { id: "o2", dim: "roi", title: "品質向上・売上貢献の指標がありますか", hint: "単なる時短以上の価値を測れるか。", options: ["ない", "仮説のみ", "一部指標あり", "部門KPIと接続", "経営KPIと接続"] },
-  { id: "o3", dim: "roi", title: "PoC後の横展開シナリオはありますか", hint: "一部署で止まらない設計。", options: ["ない", "検討中", "類似部署あり", "横展開先あり", "グループ展開可能"] },
-  { id: "o4", dim: "roi", title: "実装予算の出所は明確ですか", hint: "人事研修予算だけでなく、事業部・情シス・改善予算。", options: ["未定", "人事研修のみ", "部門予算候補あり", "DX / 情シス予算あり", "複数予算を組める"] },
-
-  { id: "f1", dim: "difficulty", title: "AIで扱う業務は定型化できますか", hint: "判断ルール、入力、出力、例外処理。", options: ["難しい", "一部のみ", "標準化可能", "かなり定型化", "テンプレート化済み"] },
-  { id: "f2", dim: "difficulty", title: "生成AI、RAG、自動化のどれが適するか見えていますか", hint: "実装方式の見極め。", options: ["不明", "生成AIだけ想定", "RAG候補あり", "自動化 / Agent候補あり", "方式別に整理済み"] },
-  { id: "f3", dim: "difficulty", title: "既存システムとの連携難易度は把握していますか", hint: "API、SaaS、認証、ネットワーク、データ抽出。", options: ["不明", "手作業前提", "CSV連携程度", "API候補あり", "認証 / APIまで確認済み"] },
-  { id: "f4", dim: "difficulty", title: "PoCを90日以内に始められますか", hint: "データ、責任者、対象業務、判断基準があるか。", options: ["難しい", "半年以上必要", "3か月で準備可", "すぐ着手可能", "PoC条件が揃っている"] },
+  {
+    id: "q1",
+    tag: "現在地",
+    text: "貴社では生成AI・AIツールが業務でどの程度使われていますか？",
+    help: "個人利用で止まっているか、部署・全社の業務プロセスに組み込めているかを確認します。",
+    lowGood: false,
+    options: ["未着手", "一部が個人利用", "部署で試行", "業務標準化中", "収益・KPIに連動"],
+    weights: { maturity: 1.8, implementation: -1.2, urgency: -0.6 }
+  },
+  {
+    id: "q2",
+    tag: "緊急性",
+    text: "競合他社や顧客のAI活用が進み、遅れへの焦りを感じていますか？",
+    help: "市場変化に対する課題感を確認します。",
+    options: ["感じない", "やや感じる", "一部で強い", "かなり強い", "経営課題レベル"],
+    weights: { urgency: 1.8, revenue: 0.8, anxiety: 0.7 }
+  },
+  {
+    id: "q3",
+    tag: "業務改善",
+    text: "資料作成・調査・議事録・メール・報告書など、時間を奪う定型業務は多いですか？",
+    help: "短期効果を出しやすい業務効率化テーマを測ります。",
+    options: ["少ない", "一部ある", "部署に多い", "全社的に多い", "残業・採算を圧迫"],
+    weights: { efficiency: 1.7, urgency: 0.8, implementation: 0.3 }
+  },
+  {
+    id: "q4",
+    tag: "収益化",
+    text: "AIを使った新サービス、営業提案、マーケティング改善、顧客単価向上に関心はありますか？",
+    help: "単なる効率化で終わらず、売上・差別化に接続できるかを見ます。",
+    options: ["低い", "情報収集中", "テーマはある", "早期検証したい", "事業化を急ぎたい"],
+    weights: { revenue: 1.9, urgency: 0.7, implementation: 0.7 }
+  },
+  {
+    id: "q5",
+    tag: "実装",
+    text: "AIチャット、RAG、社内ナレッジ検索、AIエージェントなどを実装したいが進め方が曖昧ですか？",
+    help: "PoC要件定義・データ準備・ベンダー選定・内製化判断の必要度を見ます。",
+    options: ["不要", "興味はある", "検討中", "PoCしたい", "すぐ実装したい"],
+    weights: { implementation: 2.0, urgency: 0.8, anxiety: 0.6 }
+  },
+  {
+    id: "q6",
+    tag: "不安",
+    text: "情報漏洩、著作権、誤回答、社内ルール未整備に不安がありますか？",
+    help: "AIを止める不安ではなく、安全に使うルール設計へつなげます。",
+    options: ["不安なし", "少し不安", "判断に迷う", "かなり不安", "利用制限中"],
+    weights: { governance: 1.9, anxiety: 1.6, urgency: 0.5 }
+  },
+  {
+    id: "q7",
+    tag: "人材",
+    text: "社員のAIスキル差や、使う人だけが使う属人化が起きていますか？",
+    help: "全社定着には、ツール導入よりも教育・運用・推進者育成が必要です。",
+    options: ["差は小さい", "少しある", "部署差がある", "推進者不足", "完全に属人化"],
+    weights: { maturity: -0.8, governance: 1.0, efficiency: 0.7, anxiety: 0.6 }
+  },
+  {
+    id: "q8",
+    tag: "データ",
+    text: "社内データ・マニュアル・FAQ・営業資料が散在し、AI活用の土台が弱いと感じますか？",
+    help: "AIの精度と業務定着は、データ整理・権限管理・ナレッジ設計に左右されます。",
+    options: ["整理済み", "一部課題", "部門ごとに散在", "検索困難", "AI活用不能レベル"],
+    weights: { implementation: 1.3, governance: 1.1, urgency: 0.7, anxiety: 0.7 }
+  },
+  {
+    id: "q9",
+    tag: "ROI",
+    text: "AI導入の成果を、時間削減・コスト削減・売上増・顧客満足などのKPIで説明できますか？",
+    help: "経営承認に必要な投資対効果の設計力を測ります。",
+    reverse: true,
+    options: ["説明できる", "一部できる", "曖昧", "ほぼ説明不可", "KPIがない"],
+    weights: { revenue: 1.1, urgency: 1.1, implementation: 0.7 }
+  },
+  {
+    id: "q10",
+    tag: "自動化",
+    text: "問い合わせ対応、営業初動、採用、教育、経理などをAIで半自動化したいですか？",
+    help: "AIエージェント・ワークフロー自動化の適合度を見ます。",
+    options: ["低い", "一部興味", "候補業務あり", "早期に試したい", "全社で必要"],
+    weights: { efficiency: 1.0, implementation: 1.5, urgency: 0.6 }
+  },
+  {
+    id: "q11",
+    tag: "経営",
+    text: "経営層・管理職がAI活用方針を明確に示せていますか？",
+    help: "トップの関与が弱い場合、現場利用が点で終わりやすくなります。",
+    reverse: true,
+    options: ["明確", "概ね明確", "部署任せ", "曖昧", "方針なし"],
+    weights: { maturity: -0.7, urgency: 1.0, governance: 0.8, revenue: 0.4 }
+  },
+  {
+    id: "q12",
+    tag: "現場定着",
+    text: "研修を受けても、現場で使われずに終わる懸念がありますか？",
+    help: "実施後の伴走・業務テンプレート・社内展開設計の必要度を測ります。",
+    options: ["低い", "少しある", "部署による", "かなりある", "過去に失敗"],
+    weights: { anxiety: 1.2, maturity: -0.6, efficiency: 0.6, governance: 0.5 }
+  },
+  {
+    id: "q13",
+    tag: "即効性",
+    text: "3か月以内にAI活用の成果、デモ、社内展開案を出す必要がありますか？",
+    help: "短期で必要な実践プログラムやPoC設計の必要度を確認します。",
+    options: ["必要なし", "半年以内", "3〜6か月", "3か月以内", "今すぐ必要"],
+    weights: { urgency: 2.0, implementation: 1.0, revenue: 0.5 }
+  },
+  {
+    id: "q14",
+    tag: "営業・提案",
+    text: "AIを使って提案書、顧客分析、営業トーク、見積比較などを高度化したいですか？",
+    help: "営業・マーケティング・顧客接点でのAI活用テーマを確認します。",
+    options: ["低い", "興味あり", "一部使いたい", "重点化したい", "売上直結で必須"],
+    weights: { revenue: 1.4, efficiency: 0.8, urgency: 0.6 }
+  },
+  {
+    id: "q15",
+    tag: "学習意欲",
+    text: "AIを学ぶなら、座学よりも自社課題を使った実践型が必要ですか？",
+    help: "オンデマンドで足りるか、対面・伴走ワークショップが必要かを判断します。",
+    options: ["座学で十分", "一部演習希望", "実践型がよい", "自社課題必須", "伴走まで必要"],
+    weights: { implementation: 0.9, urgency: 0.6, anxiety: 0.5 }
+  }
 ];
 
-const sceneCatalog = [
+const courses = [
   {
-    id: "rag-support",
-    category: "Field operation",
-    title: "問い合わせ対応をRAGで標準化",
-    body: "FAQ、マニュアル、規程、営業資料を横断検索し、一次回答や要約を高速化する活用シーンです。",
-    image: "./assets/scene-support-rag.jpg",
-    points: ["FAQ / マニュアル", "一次回答短縮", "属人化解消"],
+    id: "ai-basics",
+    no: "01",
+    title: "生成AI活用",
+    summary: "AI基礎、プロンプト、調査・要約、文書作成、情報漏洩防止、部門別ユースケースを扱う全社員向けの入口プログラム。",
+    format: "動画＋オンラインQA / Live",
+    duration: "3h動画＋1.5hQA",
+    target: "全社員・ビジネス職",
+    price: "動画 8,000円/ID・Live 22万円/20名・対面 +10万円/半日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-ai-basics.jpg",
+    weights: { maturityGap: 1.4, anxiety: 0.9, efficiency: 0.6, governance: 0.5 }
   },
   {
-    id: "workshop",
-    category: "Use case discovery",
-    title: "部門横断でPoCテーマを絞る",
-    body: "現場、情シス、管理部門が同じテーブルで、業務分解と優先順位付けを進める導入初期の姿を表現しています。",
-    image: "./assets/scene-workshop-mapping.jpg",
-    points: ["部門WS", "対象業務の棚卸し", "PoC優先順位"],
+    id: "m365-copilot",
+    no: "02",
+    title: "Microsoft 365 Copilot / Copilot Studio活用",
+    summary: "Word、Excel、PowerPoint、Outlook、TeamsでのCopilot活用、Copilot Studio概要、社内FAQ自動化までを実務化。",
+    format: "オンラインLive",
+    duration: "6h",
+    target: "M365導入企業・管理部門",
+    price: "動画 12,000円/ID・Live 38万円/20名・対面 +15万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-m365-copilot.jpg",
+    weights: { efficiency: 1.1, governance: 0.9, maturityGap: 0.8, implementation: 0.4 }
   },
   {
-    id: "governance",
-    category: "Governance and ROI",
-    title: "診断からガバナンス、ROIまで接続",
-    body: "データ、権限、ガバナンス、成果測定がどうつながるかを、役員にも説明しやすいイラストで可視化しています。",
-    image: "./assets/scene-governance-journey.png",
-    points: ["権限設計", "監査 / リスク", "ROI可視化"],
+    id: "google-gemini",
+    no: "03",
+    title: "Google Gemini活用",
+    summary: "Gmail、Docs、Slides、DriveでのGemini活用、検索・要約・下書き・提案資料作成をGoogle Workspace環境で実践。",
+    format: "動画＋オンライン",
+    duration: "4h",
+    target: "Google Workspace利用企業",
+    price: "動画 10,000円/ID・Live 25万円/20名・対面 +10万円/半日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-gemini.jpg",
+    weights: { efficiency: 1.0, maturityGap: 0.9, governance: 0.7, implementation: 0.3 }
   },
+  {
+    id: "excel-productivity",
+    no: "04",
+    title: "Excel業務改善",
+    summary: "Excel関数・集計・可視化・レポート作成をAIで短縮し、手作業の置換、定型レポート化、業務テンプレート化を進めます。",
+    format: "オンラインLive",
+    duration: "5h",
+    target: "管理・営業・バックオフィス",
+    price: "動画 12,000円/ID・Live 30万円/20名・対面 +12万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-excel.jpg",
+    weights: { efficiency: 1.8, urgency: 0.7, maturityGap: 0.5 }
+  },
+  {
+    id: "data-ai-pm",
+    no: "05",
+    title: "データAIプロジェクトマネジメント",
+    summary: "AIテーマ選定、PoC設計、KPI/ROI、リスク、要件整理、評価設計を行い、AI導入ロードマップに落とし込みます。",
+    format: "オンラインWS",
+    duration: "1日",
+    target: "管理職・企画・推進担当",
+    price: "動画 15,000円/ID・Live 45万円/15名・対面 +15万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-ai-project.jpg",
+    weights: { implementation: 1.7, revenue: 0.9, governance: 0.9, urgency: 0.5 }
+  },
+  {
+    id: "dify",
+    no: "06",
+    title: "Dify活用",
+    summary: "Dify基本操作、RAG、チャットボット、ワークフロー、ナレッジ管理を使い、社内FAQや業務Bot試作まで行います。",
+    format: "Live必須",
+    duration: "1日",
+    target: "DX・情報システム・開発",
+    price: "動画 18,000円/ID・Live 58万円/15名・対面 +18万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-dify.jpg",
+    weights: { implementation: 1.8, efficiency: 1.0, governance: 0.7, urgency: 0.4 }
+  },
+  {
+    id: "cursor",
+    no: "07",
+    title: "Cursor入門",
+    summary: "Cursor基本、コード理解、修正依頼、テスト、リファクタリング、プロンプト設計を通じてAIコーディングの入口を整えます。",
+    format: "オンラインLive",
+    duration: "4h",
+    target: "開発者・IT部門",
+    price: "動画 15,000円/ID・Live 28万円/15名・対面 +10万円/半日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-cursor.jpg",
+    weights: { implementation: 1.5, efficiency: 0.8, maturityGap: 0.5 }
+  },
+  {
+    id: "github-copilot",
+    no: "08",
+    title: "GitHub Copilot入門",
+    summary: "Copilot Chat、コード生成、テスト生成、レビュー、リファクタリング、組織ポリシーまでチーム利用の基礎を整備。",
+    format: "オンラインLive",
+    duration: "1日",
+    target: "開発者・IT部門",
+    price: "動画 15,000円/ID・Live 42万円/15名・対面 +15万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-github-copilot.jpg",
+    weights: { implementation: 1.5, governance: 0.8, efficiency: 0.7 }
+  },
+  {
+    id: "claude-code",
+    no: "09",
+    title: "Claude Code入門",
+    summary: "Claude Code導入、プロジェクト読込、タスク分割、修正・テスト・デバッグ、長時間実行時の注意点を実践。",
+    format: "Live / 対面推奨",
+    duration: "1日",
+    target: "開発者・テックリード",
+    price: "動画 20,000円/ID・Live 60万円/10名・対面 +20万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-claude-code.jpg",
+    weights: { implementation: 1.8, urgency: 0.7, efficiency: 0.7 }
+  },
+  {
+    id: "sdd",
+    no: "10",
+    title: "仕様駆動開発（SDD）",
+    summary: "仕様ドキュメント、実装方針、タスク分割、Coding Agent実行、レビュー基準、受入条件を整備します。",
+    format: "WS必須",
+    duration: "1日",
+    target: "開発者・PM・テックリード",
+    price: "動画 20,000円/ID・Live 65万円/12名・対面 +20万円/日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-sdd.jpg",
+    weights: { implementation: 1.7, governance: 1.0, anxiety: 0.6 }
+  },
+  {
+    id: "ai-agent",
+    no: "11",
+    title: "AIエージェント構築",
+    summary: "RAG、LangChain/LangGraph、ツール連携、ワークフロー、評価、ログ、運用設計まで行う上位プログラム。",
+    format: "Live / 対面必須",
+    duration: "2日",
+    target: "AI担当・高度技術者",
+    price: "動画 25,000円/ID・Live 98万円/10名・対面 +30万円/2日",
+    image: "./ai-diagnostic-app-final-photo-refresh/assets/scene-ai-agent.jpg",
+    weights: { implementation: 2.0, revenue: 1.0, governance: 0.9, urgency: 0.6 }
+  }
 ];
 
-const programs = [
-  { id: "diagnostic", tag: "Entry", title: "AI実装度診断", price: "30〜50万円", term: "2週間", body: "業務、データ、権限、リスク、ROI、難易度を棚卸しし、PoC候補と優先順位を整理します。" },
-  { id: "workshop", tag: "Department", title: "部門別 業務改善WS", price: "80〜120万円 / 回", term: "1日", body: "業務分解、プロンプト案、RAG / 自動化候補、実装優先度を部門ごとに具体化します。" },
-  { id: "poc", tag: "Core offer", title: "90日AI実装PoC", price: "500〜900万円", term: "12週間", body: "対象業務をPoC化し、KPI、成果物、本実装見積、横展開ロードマップまでまとめます。" },
-  { id: "mvp", tag: "Build", title: "業務AI MVP / RAG・Agent", price: "800〜1,500万円", term: "8〜12週間", body: "FAQ、文書抽出、提案書生成、AIエージェントなどをMVPとして実装し、利用ログも設計します。" },
-  { id: "coe", tag: "Operate", title: "AI CoE / LLMOps運用", price: "月80〜200万円", term: "月次", body: "利用状況分析、権限管理、評価基準、追加ユースケース創出を伴走します。" },
-  { id: "enablement", tag: "Enable", title: "AIリテラシー定着", price: "100万円〜", term: "短期集中", body: "利用ルール、Copilot / ChatGPT活用、部門別ユースケースを社内展開し、導入基盤を整えます。" },
-];
-
-const flowSteps = [
-  { step: "01", title: "仮説整理", body: "公開情報や既存接点をもとに、刺さる業務テーマと想定部門を仮置きします。" },
-  { step: "02", title: "AI実装度診断", body: "業務量、データ、権限、リスク、ROI、難易度を定量化して詰まり所を特定します。" },
-  { step: "03", title: "部門WS / PoC設計", body: "対象業務を分解し、PoCテーマ、KPI、データ条件、必要体制を固めます。" },
-  { step: "04", title: "PoC / MVP / 運用", body: "90日PoCからMVP、横展開、CoE運用までを成果物ベースで前進させます。" },
-];
-
-const playbooks = [
-  {
-    id: "poc",
-    title: "90日PoCを前提に要件を固める",
-    image: "./assets/hero-executive-briefing.jpg",
-    description: "役員説明、PoCテーマ、効果測定、予算化導線を一つにまとめて進めるプランです。",
-    note: "適する状況: ROIと業務量が見えており、部門責任者を巻き込める。",
-    score: (scores, readiness) => (readiness >= 60 ? 14 : 0) + scores.roi * 0.33 + scores.workload * 0.25 + scores.authority * 0.14 + scores.data * 0.14 + scores.risk * 0.14,
-  },
-  {
-    id: "rag",
-    title: "社内ナレッジRAG / FAQから着手する",
-    image: "./assets/scene-support-rag.jpg",
-    description: "文書、FAQ、規程、営業資料の散在を解消し、現場の一次回答や検索時間を短縮するプランです。",
-    note: "適する状況: データ所在がある程度把握でき、問い合わせ負荷が高い。",
-    score: (scores) => scores.data * 0.34 + scores.workload * 0.24 + scores.authority * 0.18 + scores.risk * 0.1 + scores.roi * 0.14,
-  },
-  {
-    id: "workshop",
-    title: "部門WSでテーマを絞る",
-    image: "./assets/scene-workshop-mapping.jpg",
-    description: "まだテーマが広い段階なら、現場と情シスを交えたWSで業務分解し、PoC候補を絞るのが最短です。",
-    note: "適する状況: 何から始めるべきか曖昧、または優先順位で止まっている。",
-    score: (scores, readiness) => (readiness < 72 ? 16 : 0) + (100 - scores.difficulty) * 0.28 + (100 - scores.data) * 0.2 + (100 - scores.authority) * 0.18 + (100 - scores.roi) * 0.18 + (100 - scores.workload) * 0.16,
-  },
-  {
-    id: "governance",
-    title: "ガバナンスと権限設計を先に整える",
-    image: "./assets/scene-governance-journey.png",
-    description: "PoC前に入力ルール、権限、ログ、レビュー体制を詰めることで、大企業で止まりやすい導入障壁を下げます。",
-    note: "適する状況: 法務、情シス、監査で止まりやすい、または顧客提案に使う。",
-    score: (scores) => (100 - scores.risk) * 0.46 + (100 - scores.authority) * 0.34 + (100 - scores.data) * 0.1 + scores.roi * 0.1,
-  },
-];
-
-const priorityMap = {
-  workload: {
-    title: "対象業務の件数と反復負荷を数値化",
-    body: "問い合わせ件数、提案件数、帳票処理量などを洗い出し、PoCで何時間削減できるかの母数を作ります。",
-  },
-  data: {
-    title: "文書、FAQ、CRM、Excelの所在を整理",
-    body: "AIに読ませたいデータの保管場所、品質、最新性、アクセス権限を一枚にまとめるとPoCが進みやすくなります。",
-  },
-  authority: {
-    title: "承認者と利用可能データ範囲を確定",
-    body: "PoCオーナー、情シス、法務、現場責任者を明確にし、AIが参照できる範囲を事前に合意しておきます。",
-  },
-  risk: {
-    title: "AI利用ルールとレビュー基準を先回りで整備",
-    body: "入力禁止情報、出力レビュー、ログ保存、外販時の注意点を整理して、稟議で止まるリスクを減らします。",
-  },
-  roi: {
-    title: "削減時間と売上貢献の仮説を言語化",
-    body: "時短だけでなく、提案品質、受注率、ナレッジ再利用率などもKPI候補に含めると投資判断が通りやすくなります。",
-  },
-  difficulty: {
-    title: "PoCテーマを1〜2件に絞る",
-    body: "RAG、文書処理、FAQ、自動化の中から、90日で成果検証しやすいテーマを選び、やらない範囲も決めます。",
-  },
+const state = {
+  answers: {},
+  currentIndex: 0,
+  lastResult: null
 };
 
-const form = document.querySelector("#assessmentForm");
+let autoAdvanceTimer = null;
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    "\"": "&quot;",
+    "'": "&#39;"
+  }[char]));
+}
+
+function isGoogleFormsConfigured() {
+  return Boolean(GOOGLE_FORMS_CONFIG.enabled && GOOGLE_FORMS_CONFIG.formActionUrl && GOOGLE_FORMS_CONFIG.formActionUrl.includes("/formResponse"));
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 const questionsContainer = document.querySelector("#questionsContainer");
+const assessmentForm = document.querySelector("#assessmentForm");
 const progressText = document.querySelector("#progressText");
 const progressBar = document.querySelector("#progressBar");
 const progressHint = document.querySelector("#progressHint");
-const profileSummary = document.querySelector("#profileSummary");
 const resultSection = document.querySelector("#preview");
 const resultRoot = document.querySelector("#resultRoot");
-const profileFields = ["companyName", "industry", "employeeSize", "targetDept", "goalFocus"];
+const courseCatalog = document.querySelector("#courseCatalog");
+const wizardCounter = document.querySelector("#wizardCounter");
+const wizardDots = document.querySelector("#wizardDots");
+const prevBtn = document.querySelector("#prevBtn");
+const nextBtn = document.querySelector("#nextBtn");
+const submitDiagnosisBtn = document.querySelector("#submitDiagnosisBtn");
 
-function renderScenes() {
-  const grid = document.querySelector("#sceneGrid");
-  grid.innerHTML = sceneCatalog.map((scene) => `
-    <article class="scene-card">
-      <div class="scene-media">
-        <img src="${scene.image}" alt="${scene.title}" />
-      </div>
-      <div class="scene-body">
-        <p class="scene-meta">${scene.category}</p>
-        <h3>${scene.title}</h3>
-        <p>${scene.body}</p>
-        <div class="scene-points">${scene.points.map((point) => `<span>${point}</span>`).join("")}</div>
-      </div>
-    </article>
-  `).join("");
-}
+/* ---------- 途中保存（localStorage） ---------- */
 
-function renderPrograms() {
-  const grid = document.querySelector("#programCatalog");
-  grid.innerHTML = programs.map((program) => `
-    <article class="program-card">
-      <span class="program-chip">${program.tag}</span>
-      <h3>${program.title}</h3>
-      <span class="program-price">${program.price}</span>
-      <p class="program-term">${program.term}</p>
-      <p>${program.body}</p>
-    </article>
-  `).join("");
-}
-
-function renderFlow() {
-  const grid = document.querySelector("#flowGrid");
-  grid.innerHTML = flowSteps.map((item) => `
-    <article class="flow-card">
-      <div class="flow-step">${item.step}</div>
-      <h3>${item.title}</h3>
-      <p>${item.body}</p>
-    </article>
-  `).join("");
-}
-
-function groupQuestions() {
-  return Object.entries(dimensions).map(([key, meta], index) => ({
-    key,
-    index: index + 1,
-    ...meta,
-    items: questions.filter((question) => question.dim === key),
-  }));
-}
-
-function renderQuestions() {
-  questionsContainer.innerHTML = groupQuestions().map((group) => `
-    <section class="question-group" data-group="${group.key}">
-      <div class="question-group-head">
-        <div>
-          <p class="eyebrow">${String(group.index).padStart(2, "0")} / ${group.short}</p>
-          <h3>${group.label}</h3>
-          <p>${group.intro}</p>
-        </div>
-        <div class="question-group-count">${group.items.length} questions</div>
-      </div>
-      <div class="question-list">
-        ${group.items.map((question, qIndex) => `
-          <article class="question-card" data-question="${question.id}">
-            <div class="question-top">
-              <div>
-                <div class="question-number">${group.short} ${qIndex + 1}</div>
-                <h4>${question.title}</h4>
-              </div>
-              <span class="question-state">未回答</span>
-            </div>
-            <p>${question.hint}</p>
-            <div class="options" role="radiogroup" aria-label="${question.title}">
-              ${question.options.map((label, optionIndex) => `
-                <label class="option">
-                  <input type="radio" name="${question.id}" value="${(optionIndex + 1) * 20}" data-dim="${question.dim}" />
-                  <span class="option-box">
-                    <span class="option-score">${optionIndex + 1}</span>
-                    <span class="option-text">${label}</span>
-                  </span>
-                </label>
-              `).join("")}
-            </div>
-          </article>
-        `).join("")}
-      </div>
-    </section>
-  `).join("");
-}
-
-function restoreState() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return;
-
+function saveProgressToStorage() {
   try {
-    const state = JSON.parse(raw);
-    profileFields.forEach((field) => {
-      const node = document.querySelector(`#${field}`);
-      if (node && state.profile?.[field]) {
-        node.value = state.profile[field];
+    localStorage.setItem(STORAGE_KEYS.answers, JSON.stringify(state.answers));
+    localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify({
+      companyName: document.querySelector("#companyName")?.value || "",
+      industry: document.querySelector("#industry")?.value || "未選択",
+      employeeSize: document.querySelector("#employeeSize")?.value || "未選択"
+    }));
+  } catch (e) { /* プライベートブラウズ等で保存不可の場合は無視 */ }
+}
+
+function loadProgressFromStorage() {
+  try {
+    const answers = JSON.parse(localStorage.getItem(STORAGE_KEYS.answers) || "{}");
+    const profile = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || "{}");
+    let restored = false;
+    questions.forEach(q => {
+      const value = Number(answers[q.id]);
+      if (value >= 1 && value <= 5) {
+        state.answers[q.id] = value;
+        restored = true;
       }
     });
-
-    Object.entries(state.answers || {}).forEach(([id, value]) => {
-      const input = document.querySelector(`input[name="${id}"][value="${value}"]`);
-      if (input) input.checked = true;
-    });
-  } catch (error) {
-    localStorage.removeItem(STORAGE_KEY);
+    if (profile.companyName) document.querySelector("#companyName").value = profile.companyName;
+    if (profile.industry) document.querySelector("#industry").value = profile.industry;
+    if (profile.employeeSize) document.querySelector("#employeeSize").value = profile.employeeSize;
+    return restored;
+  } catch (e) {
+    return false;
   }
 }
 
-function serializeState() {
-  const profile = Object.fromEntries(profileFields.map((field) => [field, document.querySelector(`#${field}`)?.value || ""]));
-  const answers = Object.fromEntries(questions.map((question) => {
-    const checked = document.querySelector(`input[name="${question.id}"]:checked`);
-    return [question.id, checked ? checked.value : ""];
-  }));
-  return { profile, answers };
+function clearStoredProgress() {
+  try {
+    localStorage.removeItem(STORAGE_KEYS.answers);
+    localStorage.removeItem(STORAGE_KEYS.profile);
+  } catch (e) { /* noop */ }
 }
 
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(serializeState()));
+/* ---------- ウィザード（1問ずつ表示） ---------- */
+
+function firstUnansweredIndex() {
+  const index = questions.findIndex(q => !state.answers[q.id]);
+  return index === -1 ? questions.length - 1 : index;
 }
 
-function updateProfileSummary() {
-  const values = [
-    document.querySelector("#industry").value,
-    document.querySelector("#employeeSize").value,
-    document.querySelector("#targetDept").value,
-    document.querySelector("#goalFocus").value,
-  ].filter((value) => value && value !== "未選択");
-
-  profileSummary.innerHTML = values.length
-    ? values.map((value) => `<span>${value}</span>`).join("")
-    : '<span>プロフィールを入力するとここに要約が表示されます</span>';
+function answeredCount() {
+  return questions.filter(q => state.answers[q.id]).length;
 }
 
-function updateQuestionStates() {
-  questions.forEach((question) => {
-    const card = document.querySelector(`[data-question="${question.id}"]`);
-    const checked = document.querySelector(`input[name="${question.id}"]:checked`);
-    if (!card) return;
-    card.classList.toggle("answered", Boolean(checked));
-    const state = card.querySelector(".question-state");
-    if (state) state.textContent = checked ? "回答済み" : "未回答";
-  });
+function isComplete() {
+  return answeredCount() === questions.length;
+}
+
+function renderWizard() {
+  const index = state.currentIndex;
+  const q = questions[index];
+  questionsContainer.innerHTML = `
+    <section class="question-card wizard-card" data-question="${q.id}">
+      <div class="question-meta">
+        <span class="question-index">Q${String(index + 1).padStart(2, "0")}</span>
+        <span class="question-tag">${q.tag}</span>
+      </div>
+      <h3>${q.text}</h3>
+      <p>${q.help}</p>
+      <div class="option-col" role="radiogroup" aria-label="${escapeHtml(q.text)}">
+        ${q.options.map((label, optionIndex) => {
+          const value = optionIndex + 1;
+          const checked = state.answers[q.id] === value ? "checked" : "";
+          return `
+            <label class="option-item">
+              <input type="radio" name="${q.id}" value="${value}" ${checked} />
+              <span class="option-number">${value}</span>
+              <span class="option-text">${label}</span>
+              <span class="option-check" aria-hidden="true">✓</span>
+            </label>
+          `;
+        }).join("")}
+      </div>
+    </section>
+  `;
+  wizardCounter.textContent = `設問 ${index + 1} / ${questions.length}`;
+  renderDots();
+  prevBtn.disabled = index === 0;
+  nextBtn.disabled = index === questions.length - 1;
+  updateProgress();
+}
+
+function renderDots() {
+  wizardDots.innerHTML = questions.map((q, i) => {
+    const classes = ["wizard-dot"];
+    if (state.answers[q.id]) classes.push("is-answered");
+    if (i === state.currentIndex) classes.push("is-current");
+    return `<button type="button" class="${classes.join(" ")}" data-index="${i}" aria-label="設問${i + 1}へ移動" title="Q${String(i + 1).padStart(2, "0")}"></button>`;
+  }).join("");
+}
+
+function goToQuestion(index) {
+  if (autoAdvanceTimer) { clearTimeout(autoAdvanceTimer); autoAdvanceTimer = null; }
+  state.currentIndex = Math.max(0, Math.min(questions.length - 1, index));
+  renderWizard();
+}
+
+function handleAnswer(questionId, value) {
+  state.answers[questionId] = value;
+  saveProgressToStorage();
+  renderDots();
+  updateProgress();
+  if (autoAdvanceTimer) clearTimeout(autoAdvanceTimer);
+  const isLast = state.currentIndex === questions.length - 1;
+  if (!isLast) {
+    autoAdvanceTimer = setTimeout(() => {
+      goToQuestion(state.currentIndex + 1);
+    }, prefersReducedMotion() ? 120 : 320);
+  } else if (isComplete()) {
+    submitDiagnosisBtn.classList.add("is-ready");
+  }
 }
 
 function updateProgress() {
-  const answered = questions.filter((question) => document.querySelector(`input[name="${question.id}"]:checked`)).length;
+  const answered = answeredCount();
   const pct = Math.round((answered / questions.length) * 100);
-
   progressText.textContent = `${pct}%`;
   progressBar.style.width = `${pct}%`;
-
-  const nextQuestion = questions.find((question) => !document.querySelector(`input[name="${question.id}"]:checked`));
-  if (nextQuestion) {
-    progressHint.textContent = `次は「${dimensions[nextQuestion.dim].label}」の設問です。残り ${questions.length - answered} 問です。`;
-  } else {
-    progressHint.textContent = "すべて回答済みです。診断結果を表示できます。";
-  }
-
-  updateProfileSummary();
-  updateQuestionStates();
+  if (pct === 0) progressHint.textContent = "最初の設問から回答してください。";
+  else if (pct < 100) progressHint.textContent = `あと${questions.length - answered}問で診断できます。`;
+  else progressHint.textContent = "全問回答済み。「診断結果を見る」を押してください。";
+  submitDiagnosisBtn.classList.toggle("is-ready", isComplete());
 }
 
-function calculate() {
-  const scores = Object.fromEntries(Object.keys(dimensions).map((key) => [key, []]));
+/* ---------- 講座カタログ ---------- */
 
-  for (const question of questions) {
-    const checked = document.querySelector(`input[name="${question.id}"]:checked`);
-    if (!checked) return null;
-    scores[question.dim].push(Number(checked.value));
-  }
-
-  const dimensionScores = Object.fromEntries(
-    Object.entries(scores).map(([key, values]) => [key, Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)]),
-  );
-
-  const weights = { workload: 1.05, data: 1.15, authority: 1.0, risk: 1.1, roi: 1.15, difficulty: 0.95 };
-  const totalWeight = Object.values(weights).reduce((sum, value) => sum + value, 0);
-  const readiness = Math.round(
-    Object.entries(dimensionScores).reduce((sum, [key, value]) => sum + value * weights[key], 0) / totalWeight,
-  );
-
-  const ordered = Object.entries(dimensionScores).sort((a, b) => a[1] - b[1]);
-  const strengths = [...ordered].reverse().slice(0, 2).map(([key]) => key);
-  const blockers = ordered.slice(0, 2).map(([key]) => key);
-  const executionRisk = Math.round((100 - dimensionScores.risk) * 0.4 + (100 - dimensionScores.authority) * 0.35 + (100 - dimensionScores.data) * 0.25);
-  const roiPotential = Math.round(dimensionScores.workload * 0.35 + dimensionScores.roi * 0.45 + dimensionScores.data * 0.2);
-
-  return { dimensionScores, readiness, strengths, blockers, executionRisk, roiPotential };
+function renderCourseCatalog() {
+  courseCatalog.innerHTML = courses.map(course => `
+    <article class="course-card">
+      <div class="course-image"><img src="${course.image}" alt="${course.title}の活用シーン" loading="lazy" /></div>
+      <span class="course-no">${course.no}</span>
+      <h3>${course.title}</h3>
+      <p>${course.summary}</p>
+      <div class="course-meta">
+        <span>${course.format}</span>
+        <span>${course.duration}</span>
+        <span>${course.target}</span>
+      </div>
+      <p class="course-price">${course.price}</p>
+    </article>
+  `).join("");
 }
 
-function readinessMeta(score) {
-  if (score >= 82) {
-    return {
-      label: "本実装直前",
-      message: "90日PoCからMVP、横展開まで進めやすい状態です。稟議用のKPIと最終ガバナンス整理を固めれば、本実装フェーズへ進めます。",
-    };
-  }
-  if (score >= 68) {
-    return {
-      label: "PoC設計可能",
-      message: "対象業務と投資テーマは見えています。PoCテーマの絞り込みと、データ・権限・ROI条件の具体化が次の一手です。",
-    };
-  }
-  if (score >= 52) {
-    return {
-      label: "準備・棚卸し段階",
-      message: "AI活用意欲は高い一方で、データ所在、責任者、効果測定の整理が不足しています。まず有償診断と部門WSが有効です。",
-    };
-  }
+/* ---------- スコア計算 ---------- */
+
+function clamp(value, min = 0, max = 100) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function normalize(raw, max) {
+  if (max <= 0) return 0;
+  return clamp(Math.round((raw / max) * 100));
+}
+
+function calculateScores(answers = state.answers) {
+  const raw = { urgency: 0, revenue: 0, efficiency: 0, implementation: 0, governance: 0, anxiety: 0, maturity: 0 };
+  const max = { urgency: 0, revenue: 0, efficiency: 0, implementation: 0, governance: 0, anxiety: 0, maturity: 0 };
+
+  questions.forEach(q => {
+    const answer = Number(answers[q.id] || 0);
+    // reverse設問（q9/q11）は「1=良い状態」なので、必要度スコアとしては反転して評価する
+    const baseValue = q.reverse && answer > 0 ? (6 - answer) : answer;
+    Object.entries(q.weights).forEach(([key, weight]) => {
+      const positiveWeight = Math.abs(weight);
+      max[key] = (max[key] || 0) + positiveWeight * 5;
+      raw[key] = (raw[key] || 0) + (baseValue * weight);
+    });
+  });
+
+  const maturityRaw = raw.maturity;
+  const maturityScore = clamp(Math.round(50 + (maturityRaw / Math.max(max.maturity, 1)) * 50));
+  const maturityGap = 100 - maturityScore;
+
+  const scores = {
+    urgency: normalize(raw.urgency, max.urgency),
+    revenue: normalize(raw.revenue, max.revenue),
+    efficiency: normalize(raw.efficiency, max.efficiency),
+    implementation: normalize(raw.implementation, max.implementation),
+    governance: normalize(raw.governance, max.governance),
+    anxiety: normalize(raw.anxiety, max.anxiety),
+    maturity: maturityScore,
+    maturityGap
+  };
+
+  const pressure = clamp(Math.round(
+    scores.urgency * 0.26 +
+    scores.implementation * 0.18 +
+    scores.revenue * 0.16 +
+    scores.efficiency * 0.14 +
+    scores.governance * 0.12 +
+    scores.anxiety * 0.10 +
+    scores.maturityGap * 0.04
+  ));
+
+  return { ...scores, pressure };
+}
+
+function recommendCourses(scores) {
+  return courses.map(course => {
+    const value = Object.entries(course.weights).reduce((sum, [key, weight]) => sum + (scores[key] || 0) * weight, 0);
+    const reasons = [];
+    if ((course.weights.revenue || 0) > 1 && scores.revenue >= 60) reasons.push("売上・顧客接点のAI活用余地が大きい");
+    if ((course.weights.efficiency || 0) > 1 && scores.efficiency >= 60) reasons.push("業務効率化の即効テーマが多い");
+    if ((course.weights.implementation || 0) > 1 && scores.implementation >= 60) reasons.push("AI実装・PoC設計を整理する必要がある");
+    if ((course.weights.governance || 0) > 1 && scores.governance >= 60) reasons.push("情報管理・ルール整備への不安が強い");
+    if ((course.weights.maturityGap || 0) > 1 && scores.maturityGap >= 45) reasons.push("社内定着・推進者育成の優先度が高い");
+    if ((course.weights.anxiety || 0) > 1 && scores.anxiety >= 60) reasons.push("不安を安全利用ルールに変える段階");
+    return { ...course, matchScore: Math.round(value / 3.2), reasons: reasons.length ? reasons : ["診断スコアとの総合適合度が高い"] };
+  }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 3);
+}
+
+function getPressureLevel(score) {
+  if (score >= 78) return { title: "重点強化レベル", tone: "critical", text: "AI活用を部署単位の実践テーマへ落とし込む段階です。基礎理解だけで終わらせず、90日以内に業務テンプレート・PoC・安全利用ルールを形にすると効果が出やすい状態です。" };
+  if (score >= 58) return { title: "実践準備レベル", tone: "high", text: "AI活用の方向性は見え始めています。個人利用で止めず、部署単位の業務改善テーマとルール整備を並行して進めると成果が出やすい状態です。" };
+  if (score >= 38) return { title: "基礎整備レベル", tone: "medium", text: "大規模実装の前に、AI基礎・安全利用・業務テンプレート整備から始めると、現場定着しやすくなります。" };
+  return { title: "小さく試すレベル", tone: "low", text: "現時点では小さく始めやすい状態です。基礎理解と身近な改善テーマを作っておくと、次の展開へ進みやすくなります。" };
+}
+
+function buildRiskMessage(scores) {
+  const dimensions = [
+    ["収益化", scores.revenue],
+    ["業務改善", scores.efficiency],
+    ["実装", scores.implementation],
+    ["ガバナンス", scores.governance],
+    ["不安", scores.anxiety]
+  ].sort((a, b) => b[1] - a[1]);
+  const maxDimension = dimensions[0];
+  const minDimension = dimensions[dimensions.length - 1];
+
+  const riskMap = {
+    "収益化": "AIを単なる時短ツールで終わらせず、提案・商品企画・顧客接点の改善テーマへ接続すると効果が広がります。",
+    "業務改善": "定型業務の負荷を見える化し、AIで置き換えやすい業務からテンプレート化すると、処理速度と品質を高められます。",
+    "実装": "PoC要件を整理してから進めると、ツール導入で止まらず、現場定着と効果測定につなげやすくなります。",
+    "ガバナンス": "ルールと承認フローを整えることで、情報漏洩・誤回答・著作権・社内承認の不安を下げながら活用範囲を広げられます。",
+    "不安": "不安を整理し、使ってよい範囲と確認方法を明確にすると、組織全体でAI活用の学習速度を高められます。"
+  };
+
   return {
-    label: "基盤整備優先",
-    message: "ルール、対象業務、データ所在、推進責任者の整備が先です。研修単体ではなく、導入条件の棚卸しから始めると進みやすくなります。",
+    dimension: maxDimension[0],
+    text: riskMap[maxDimension[0]],
+    strongDimension: minDimension[0],
+    strongScore: minDimension[1]
   };
 }
 
-function roiNarrative(result) {
-  const { workload, roi } = result.dimensionScores;
-  if (workload >= 75 && roi >= 70) {
-    return "削減余地が大きく、月100〜300時間規模の時短仮説や提案品質向上のKPIを置きやすい状態です。90日PoCの本命提案が通しやすいレンジです。";
-  }
-  if (workload >= 55 && roi >= 55) {
-    return "部門単位で月30〜100時間規模の削減仮説から検証できる状態です。まずは有償診断とPoC設計パックで投資対効果の仮説を固めるのが現実的です。";
-  }
-  return "対象業務の件数、処理時間、品質指標を棚卸しし、ROIの母数を作る段階です。先に効果測定設計を行うと次の提案が通りやすくなります。";
-}
-
-function recommendPrograms(result) {
-  const { readiness, dimensionScores } = result;
-  const picks = [];
-
-  if (readiness >= 78) {
-    picks.push("poc", "mvp", "coe");
-  } else if (readiness >= 62) {
-    picks.push("diagnostic", "workshop", "poc");
-  } else {
-    picks.push("diagnostic", "enablement", "workshop");
-  }
-
-  if (dimensionScores.risk < 60 || dimensionScores.authority < 60) {
-    picks.unshift("diagnostic");
-  }
-
-  return [...new Set(picks)].slice(0, 3).map((id) => programs.find((program) => program.id === id));
-}
-
-function buildPriorities(result) {
-  return result.blockers.map((key) => ({
-    axis: dimensions[key].label,
-    ...priorityMap[key],
-  }));
-}
-
-function roadmapFor(result) {
-  const blockerText = result.blockers.map((key) => dimensions[key].short).join("・");
-
-  if (result.readiness >= 70) {
-    return [
-      { week: "Week 1-2", title: "要件確定", body: `対象業務、データ、権限、KPIを確定し、特に ${blockerText} の論点を詰めます。` },
-      { week: "Week 3-4", title: "部門実践 / 設計", body: "対象部門向けの実践支援とプロンプト整備を進め、PoC成果物の形を定義します。" },
-      { week: "Week 5-8", title: "PoC試作", body: "RAG、文書処理、提案書生成などの本命テーマを試作し、利用ログと効果測定を取得します。" },
-      { week: "Week 9-12", title: "稟議化 / 横展開", body: "本実装見積、横展開条件、運用体制、CoE設計をまとめて次の投資判断へつなげます。" },
-    ];
-  }
-
+function buildRoadmap(scores, recs) {
+  const first = recs[0]?.title || "生成AI基礎・安全利用リテラシープログラム";
+  const second = recs[1]?.title || "業務改善プロンプト実践プログラム";
+  const third = recs[2]?.title || "AI PoC要件定義・実装設計プログラム";
   return [
-    { week: "Week 1-2", title: "実装度診断", body: `対象業務、データ所在、${blockerText} を中心に導入条件を棚卸しします。` },
-    { week: "Week 3-4", title: "部門WS", body: "業務分解とテーマ選定を行い、PoC候補と優先順位を絞ります。" },
-    { week: "Week 5-8", title: "PoC設計準備", body: "データ条件、権限、レビュー体制、KPI仮説を固め、90日で試せるスコープに落とします。" },
-    { week: "Week 9-12", title: "次回提案", body: "有償診断からPoC設計パックまたは90日PoC提案へ接続し、見積と体制案を提示します。" },
+    { day: "Day 1-30", title: "共通理解と安全利用ルール", text: `${first}を起点に、利用可能ツール、禁止事項、対象業務、成果KPIを整理する。` },
+    { day: "Day 31-60", title: "業務テンプレート化", text: `${second}を通じて、議事録・提案書・調査・顧客対応など3〜5業務をテンプレート化する。` },
+    { day: "Day 61-90", title: "PoC・収益化テーマ化", text: `${third}で、AI実装または事業活用テーマを1件選び、デモ・要件・判断材料へ落とす。` }
   ];
 }
 
-function pickPlaybooks(result) {
-  return playbooks
-    .map((playbook) => ({
-      ...playbook,
-      relevance: Math.round(playbook.score(result.dimensionScores, result.readiness)),
-    }))
-    .sort((a, b) => b.relevance - a.relevance)
-    .slice(0, 3);
+/* ---------- レーダーチャート ---------- */
+
+const READINESS_LINE = 60;
+
+function renderRadar(canvas, scores) {
+  const ctx = canvas.getContext("2d");
+  const width = canvas.width;
+  const height = canvas.height;
+  ctx.clearRect(0, 0, width, height);
+  const cx = width / 2;
+  const cy = height / 2 + 8;
+  const radius = Math.min(width, height) * 0.34;
+  const items = [
+    ["緊急性", scores.urgency],
+    ["収益化", scores.revenue],
+    ["業務改善", scores.efficiency],
+    ["実装", scores.implementation],
+    ["統制", scores.governance],
+    ["不安", scores.anxiety]
+  ];
+
+  ctx.font = "13px system-ui, sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+
+  for (let level = 1; level <= 5; level++) {
+    const r = radius * level / 5;
+    ctx.beginPath();
+    items.forEach((_, i) => {
+      const angle = -Math.PI / 2 + (Math.PI * 2 * i / items.length);
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.strokeStyle = `rgba(37,99,235,${0.08 + level * 0.02})`;
+    ctx.stroke();
+  }
+
+  items.forEach(([label], i) => {
+    const angle = -Math.PI / 2 + (Math.PI * 2 * i / items.length);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
+    ctx.strokeStyle = "rgba(37,99,235,.12)";
+    ctx.stroke();
+    const labelX = cx + Math.cos(angle) * (radius + 34);
+    const labelY = cy + Math.sin(angle) * (radius + 28);
+    ctx.fillStyle = "rgba(23,32,51,.92)";
+    ctx.fillText(label, labelX, labelY);
+  });
+
+  // 実践準備ライン（60）を点線で表示
+  ctx.beginPath();
+  items.forEach((_, i) => {
+    const r = radius * READINESS_LINE / 100;
+    const angle = -Math.PI / 2 + (Math.PI * 2 * i / items.length);
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.setLineDash([7, 6]);
+  ctx.strokeStyle = "rgba(245,158,11,.85)";
+  ctx.lineWidth = 1.6;
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.lineWidth = 1;
+
+  ctx.beginPath();
+  items.forEach(([, value], i) => {
+    const r = radius * value / 100;
+    const angle = -Math.PI / 2 + (Math.PI * 2 * i / items.length);
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  const gradient = ctx.createLinearGradient(0, 0, width, height);
+  gradient.addColorStop(0, "rgba(37,99,235,.32)");
+  gradient.addColorStop(1, "rgba(20,184,163,.24)");
+  ctx.fillStyle = gradient;
+  ctx.fill();
+  ctx.strokeStyle = "rgba(37,99,235,.85)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  items.forEach(([, value], i) => {
+    const r = radius * value / 100;
+    const angle = -Math.PI / 2 + (Math.PI * 2 * i / items.length);
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = "#2563eb";
+    ctx.fill();
+  });
 }
 
-function executiveSummary(result, meta, recommendedProgramsList) {
-  const companyName = document.querySelector("#companyName").value.trim() || "未入力企業";
-  const dept = document.querySelector("#targetDept").value;
-  const goal = document.querySelector("#goalFocus").value;
-  const focusAxis = dimensions[result.blockers[0]].label;
-  const strongestAxis = dimensions[result.strengths[0]].label;
-
-  return [
-    `会社 / 部署: ${companyName}${dept && dept !== "未選択" ? ` / ${dept}` : ""}`,
-    `判定: ${meta.label} (${result.readiness} / 100)`,
-    `強み: ${strongestAxis}`,
-    `先に詰める論点: ${focusAxis}`,
-    `推奨メニュー: ${recommendedProgramsList.map((program) => program.title).join("、")}`,
-    goal && goal !== "未選択" ? `今回の狙い: ${goal}` : null,
-  ].filter(Boolean).join("\n");
+function renderRadarLegend() {
+  const legend = document.querySelector("#radarLegend");
+  if (!legend) return;
+  legend.innerHTML = `
+    <span class="legend-item"><span class="legend-swatch legend-self"></span>自社スコア</span>
+    <span class="legend-item"><span class="legend-swatch legend-line"></span>実践準備ライン（${READINESS_LINE}）</span>
+    <small>数値が高い領域ほど、優先して整えるべきテーマです。</small>
+  `;
 }
 
-function summaryText(result, meta, recommendedProgramsList) {
+/* ---------- スコア演出 ---------- */
+
+function animateScoreRing(ringEl, scoreEl, target) {
+  if (prefersReducedMotion()) {
+    scoreEl.textContent = target;
+    ringEl.style.setProperty("--ring", `${target * 3.6}deg`);
+    return;
+  }
+  const duration = 900;
+  const start = performance.now();
+  function frame(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const value = Math.round(target * eased);
+    scoreEl.textContent = value;
+    ringEl.style.setProperty("--ring", `${value * 3.6}deg`);
+    if (t < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function priorityLabel(value) {
+  if (value >= 70) return { label: "優先度：高", tone: "high" };
+  if (value >= 40) return { label: "優先度：中", tone: "mid" };
+  return { label: "優先度：低", tone: "low" };
+}
+
+/* ---------- 診断結果 ---------- */
+
+function renderResult(options = {}) {
+  const { demo = false } = options;
+  const scores = calculateScores();
+  const level = getPressureLevel(scores.pressure);
+  const risk = buildRiskMessage(scores);
+  const recs = recommendCourses(scores);
+  const roadmap = buildRoadmap(scores, recs);
+  const companyName = document.querySelector("#companyName").value.trim() || "未入力";
+  const industry = document.querySelector("#industry").value;
+  const employeeSize = document.querySelector("#employeeSize").value;
+
+  state.lastResult = {
+    companyName,
+    industry,
+    employeeSize,
+    scores,
+    level,
+    risk,
+    recommendations: recs.map(({ title, summary, format, duration, target, matchScore, reasons }) => ({ title, summary, format, duration, target, matchScore, reasons })),
+    answers: { ...state.answers },
+    generatedAt: new Date().toISOString()
+  };
+
+  const template = document.querySelector("#resultTemplate");
+  const node = template.content.cloneNode(true);
+  resultRoot.innerHTML = "";
+  resultRoot.appendChild(node);
+
+  const ring = document.querySelector("#urgencyRing");
+  const score = document.querySelector("#urgencyScore");
+  const title = document.querySelector("#resultTitle");
+  const summary = document.querySelector("#resultSummary");
+  const badges = document.querySelector("#resultBadges");
+  const kpiGrid = document.querySelector("#kpiGrid");
+  const riskMessage = document.querySelector("#riskMessage");
+  const recommendations = document.querySelector("#recommendations");
+  const roadmapRoot = document.querySelector("#roadmap");
+
+  animateScoreRing(ring, score, scores.pressure);
+  title.textContent = level.title;
+  summary.textContent = level.text;
+  const badgeValues = [companyName, industry, employeeSize].filter(Boolean);
+  if (demo) badgeValues.unshift("サンプル表示");
+  badges.innerHTML = badgeValues.map(v => `<span class="badge${v === "サンプル表示" ? " badge-demo" : ""}">${escapeHtml(v)}</span>`).join("");
+
+  const kpis = [
+    ["緊急性", scores.urgency, "意思決定を急ぐべき度合い"],
+    ["収益化余地", scores.revenue, "売上・提案価値への接続度"],
+    ["効率化余地", scores.efficiency, "時短・コスト削減の余地"],
+    ["実装ギャップ", scores.implementation, "PoC/自動化の必要度"],
+    ["統制・不安", Math.round((scores.governance + scores.anxiety) / 2), "安全利用ルールの必要度"]
+  ];
+  kpiGrid.innerHTML = kpis.map(([label, value, desc]) => {
+    const priority = priorityLabel(value);
+    return `
+      <article class="kpi-card">
+        <div class="kpi-head">
+          <span>${label}</span>
+          <em class="kpi-chip kpi-${priority.tone}">${priority.label}</em>
+        </div>
+        <strong>${value}</strong>
+        <div class="kpi-bar"><span style="width:${clamp(value)}%"></span></div>
+        <p>${desc}</p>
+      </article>
+    `;
+  }).join("");
+
+  riskMessage.innerHTML = `
+    <strong>優先して整える領域：${risk.dimension}</strong>
+    <p>${risk.text}</p>
+    <p class="risk-strong">比較的整っている領域：<b>${risk.strongDimension}</b>（${risk.strongScore}）。この強みを起点に展開すると、社内合意を得やすくなります。</p>
+  `;
+
+  recommendations.innerHTML = recs.map((course, index) => `
+    <article class="recommendation-card">
+      <span class="rank">NO.${index + 1} / MATCH ${clamp(course.matchScore)}%</span>
+      <h3>${course.title}</h3>
+      <p>${course.summary}</p>
+      <div class="course-meta">
+        <span>${course.format}</span>
+        <span>${course.duration}</span>
+        <span>${course.target}</span>
+      </div>
+      <p><strong>推奨理由：</strong>${course.reasons.join(" / ")}</p>
+    </article>
+  `).join("");
+
+  roadmapRoot.innerHTML = roadmap.map(item => `
+    <article class="roadmap-item">
+      <span>${item.day}</span>
+      <h3>${item.title}</h3>
+      <p>${item.text}</p>
+    </article>
+  `).join("");
+
+  renderRadar(document.querySelector("#radarCanvas"), scores);
+  renderRadarLegend();
+  resultSection.classList.remove("hidden");
+  resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  wireResultActions();
+  prepareApplicationForm();
+}
+
+function buildSummaryText(result = state.lastResult) {
+  if (!result) return "";
   return [
-    "【Edutex AI実装度診断サマリー】",
-    executiveSummary(result, meta, recommendedProgramsList),
-    `ROIポテンシャル: ${result.roiPotential} / 100`,
-    `実装リスク: ${result.executionRisk} / 100`,
-    `コメント: ${meta.message}`,
+    `【AI活用診断結果】`,
+    `会社/部署：${result.companyName}`,
+    `業種：${result.industry}`,
+    `従業員規模：${result.employeeSize}`,
+    `AI実装度：${result.scores.pressure}/100（${result.level.title}）`,
+    `緊急性：${result.scores.urgency} / 収益化：${result.scores.revenue} / 効率化：${result.scores.efficiency} / 実装：${result.scores.implementation} / 統制不安：${Math.round((result.scores.governance + result.scores.anxiety) / 2)}`,
+    `優先して整える領域：${result.risk.dimension}`,
+    result.risk.text,
+    `推奨実践プログラム：`,
+    ...result.recommendations.map((c, i) => `${i + 1}. ${c.title}（${c.format} / ${c.duration}）`)
   ].join("\n");
 }
 
-function downloadJson(result, meta, recommendedProgramsList) {
-  const data = {
-    generatedAt: new Date().toISOString(),
-    profile: Object.fromEntries(profileFields.map((field) => [field, document.querySelector(`#${field}`).value])),
-    result,
-    meta,
-    recommendedPrograms: recommendedProgramsList,
-    summary: summaryText(result, meta, recommendedProgramsList),
+function prepareApplicationForm() {
+  const result = state.lastResult;
+  if (!result) return;
+  const desiredCourse = document.querySelector("#desiredCourse");
+  const applicationSummary = document.querySelector("#applicationSummary");
+  if (desiredCourse) {
+    desiredCourse.innerHTML = [
+      `<option value="${escapeHtml(result.recommendations[0]?.title || "")}">推奨1位：${escapeHtml(result.recommendations[0]?.title || "未選択")}</option>`,
+      ...result.recommendations.slice(1).map((course, i) => `<option value="${escapeHtml(course.title)}">推奨${i + 2}位：${escapeHtml(course.title)}</option>`),
+      `<option value="結果を見て決めたい">結果を見て決めたい</option>`
+    ].join("");
+  }
+  if (applicationSummary) {
+    applicationSummary.innerHTML = `
+      <strong>共有される診断サマリー</strong>
+      <p>${escapeHtml(result.companyName)} / AI実装度 ${result.scores.pressure}/100 / ${escapeHtml(result.level.title)} / 推奨1位：${escapeHtml(result.recommendations[0]?.title || "未選択")}</p>
+    `;
+  }
+}
+
+function getApplicationPayload() {
+  const result = state.lastResult;
+  const recommended = result.recommendations.map((c, i) => `${i + 1}. ${c.title}`).join(" / ");
+  return {
+    companyName: result.companyName,
+    industry: result.industry,
+    employeeSize: result.employeeSize,
+    contactName: document.querySelector("#contactName")?.value.trim() || "",
+    contactEmail: document.querySelector("#contactEmail")?.value.trim() || "",
+    contactPhone: document.querySelector("#contactPhone")?.value.trim() || "",
+    contactRole: document.querySelector("#contactRole")?.value.trim() || "",
+    requestType: document.querySelector("#requestType")?.value || "",
+    desiredCourse: document.querySelector("#desiredCourse")?.value || "",
+    applicationNote: document.querySelector("#applicationNote")?.value.trim() || "",
+    pressureScore: String(result.scores.pressure),
+    resultLevel: result.level.title,
+    riskDimension: result.risk.dimension,
+    recommendedCourses: recommended,
+    diagnosisSummary: buildSummaryText(result),
+    resultJson: JSON.stringify(result),
+    consent: document.querySelector("#privacyConsent")?.checked ? "同意" : "未同意"
   };
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "edutex-ai-readiness-result.json";
-  link.click();
-  URL.revokeObjectURL(url);
 }
 
-function flashButton(button, text) {
-  const original = button.dataset.original || button.textContent;
-  button.dataset.original = original;
-  button.textContent = text;
-  window.setTimeout(() => {
-    button.textContent = original;
-  }, 1500);
+function submitToGoogleForms(payload) {
+  if (!isGoogleFormsConfigured()) {
+    const saved = JSON.parse(localStorage.getItem("aiDiagnosisApplications") || "[]");
+    saved.push({ ...payload, submittedAt: new Date().toISOString(), mode: "local-demo" });
+    localStorage.setItem("aiDiagnosisApplications", JSON.stringify(saved));
+    return Promise.resolve({ demo: true });
+  }
+
+  return new Promise(resolve => {
+    const iframeName = `hidden_google_form_${Date.now()}`;
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    const form = document.createElement("form");
+    form.action = GOOGLE_FORMS_CONFIG.formActionUrl;
+    form.method = "POST";
+    form.target = iframeName;
+    form.style.display = "none";
+
+    Object.entries(GOOGLE_FORMS_CONFIG.fields).forEach(([key, entryName]) => {
+      if (!entryName || !entryName.startsWith("entry.")) return;
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = entryName;
+      input.value = payload[key] ?? "";
+      form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    setTimeout(() => {
+      form.remove();
+      iframe.remove();
+      resolve({ demo: false });
+    }, 900);
+  });
 }
 
-function renderResults(result) {
-  const meta = readinessMeta(result.readiness);
-  const priorities = buildPriorities(result);
-  const roadmap = roadmapFor(result);
-  const recommendedProgramsList = recommendPrograms(result);
-  const recommendedPlaybooks = pickPlaybooks(result);
-  const summary = summaryText(result, meta, recommendedProgramsList);
+function validateApplicationForm() {
+  const name = document.querySelector("#contactName");
+  const email = document.querySelector("#contactEmail");
+  const requestType = document.querySelector("#requestType");
+  const consent = document.querySelector("#privacyConsent");
+  const status = document.querySelector("#formStatus");
+  const invalid = [name, email, requestType].find(el => !el?.value?.trim()) || (!consent?.checked ? consent : null);
+  if (!invalid) return true;
+  if (status) status.textContent = "必須項目を入力し、送信同意にチェックしてください。";
+  invalid?.focus?.();
+  return false;
+}
 
-  resultRoot.innerHTML = `
-    <div class="result-shell">
-      <section class="result-hero result-panel">
-        <div class="score-ring" style="--ring: ${result.readiness * 3.6}deg;">
-          <span>${result.readiness}</span>
-        </div>
-        <div class="result-hero-copy">
-          <p class="eyebrow">AI implementation score</p>
-          <h3>${meta.label}</h3>
-          <p>${meta.message}</p>
-          <div class="result-tags">
-            ${result.strengths.map((key) => `<span>強み: ${dimensions[key].label}</span>`).join("")}
-            ${result.blockers.map((key) => `<span>論点: ${dimensions[key].label}</span>`).join("")}
-          </div>
-          <div class="result-meta">
-            <article><span>ROIポテンシャル</span><strong>${result.roiPotential}</strong></article>
-            <article><span>実装リスク</span><strong>${result.executionRisk}</strong></article>
-            <article><span>次の一手</span><strong>${recommendedProgramsList[0].title}</strong></article>
-          </div>
-        </div>
-      </section>
-
-      <div class="result-grid">
-        <section class="result-panel">
-          <h3 class="panel-title">6軸スコア</h3>
-          <div class="dimension-bars">
-            ${Object.entries(result.dimensionScores).map(([key, value]) => `
-              <div class="bar-row">
-                <strong>${dimensions[key].short}</strong>
-                <div class="bar-track"><span style="width: ${value}%"></span></div>
-                <b>${value}</b>
-              </div>
-            `).join("")}
-          </div>
-        </section>
-
-        <section class="result-panel">
-          <h3 class="panel-title">優先アクション</h3>
-          <div class="priority-list">
-            ${priorities.map((item, index) => `
-              <article class="priority-item">
-                <strong>${index + 1}. ${item.title}</strong>
-                <p>${item.body}</p>
-              </article>
-            `).join("")}
-          </div>
-        </section>
-      </div>
-
-      <section class="result-panel">
-        <h3 class="panel-title">おすすめの進め方</h3>
-        <div class="playbook-grid">
-          ${recommendedPlaybooks.map((playbook) => `
-            <article class="playbook-card">
-              <img src="${playbook.image}" alt="${playbook.title}" />
-              <div class="playbook-body">
-                <span class="playbook-relevance">relevance ${playbook.relevance}</span>
-                <h4>${playbook.title}</h4>
-                <p>${playbook.description}</p>
-                <div class="playbook-note">${playbook.note}</div>
-              </div>
-            </article>
-          `).join("")}
-        </div>
-      </section>
-
-      <div class="result-grid">
-        <section class="result-panel">
-          <h3 class="panel-title">役員向けメモ</h3>
-          <ul class="summary-list">
-            ${executiveSummary(result, meta, recommendedProgramsList).split("\n").map((line) => `<li><strong>${line.split(":")[0]}:</strong><p>${line.split(":").slice(1).join(":").trim()}</p></li>`).join("")}
-          </ul>
-        </section>
-
-        <section class="result-panel">
-          <h3 class="panel-title">ROI仮説</h3>
-          <article class="priority-item">
-            <strong>投資対効果の見立て</strong>
-            <p>${roiNarrative(result)}</p>
-          </article>
-          <article class="priority-item">
-            <strong>推奨メニュー</strong>
-            <p>${recommendedProgramsList.map((program) => `${program.title} (${program.price})`).join(" / ")}</p>
-          </article>
-        </section>
-      </div>
-
-      <section class="result-panel">
-        <h3 class="panel-title">90日ロードマップ</h3>
-        <div class="roadmap-grid">
-          ${roadmap.map((step) => `
-            <article class="roadmap-card">
-              <strong>${step.week} | ${step.title}</strong>
-              <p>${step.body}</p>
-            </article>
-          `).join("")}
-        </div>
-      </section>
-
-      <section class="result-panel">
-        <h3 class="panel-title">提案メニュー候補</h3>
-        <div class="recommend-grid">
-          ${recommendedProgramsList.map((program) => `
-            <article class="recommend-card">
-              <strong>${program.title}</strong>
-              <p>${program.price} / ${program.term}</p>
-              <p>${program.body}</p>
-            </article>
-          `).join("")}
-        </div>
-      </section>
-
-      <div class="result-actions">
-        <button id="copyResultBtn" type="button" class="primary-btn">診断サマリーをコピー</button>
-        <button id="downloadJsonBtn" type="button" class="ghost-btn">JSONをダウンロード</button>
-        <button id="printResultBtn" type="button" class="ghost-btn">結果を印刷</button>
-      </div>
-    </div>
-  `;
-
-  const copyButton = document.querySelector("#copyResultBtn");
-  const downloadButton = document.querySelector("#downloadJsonBtn");
-  const printButton = document.querySelector("#printResultBtn");
-
-  copyButton.addEventListener("click", async () => {
-    await navigator.clipboard.writeText(summary);
-    flashButton(copyButton, "コピーしました");
+function wireResultActions() {
+  document.querySelector("#copyResultBtn")?.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(buildSummaryText());
+    alert("診断結果をコピーしました。");
   });
 
-  downloadButton.addEventListener("click", () => downloadJson(result, meta, recommendedProgramsList));
-  printButton.addEventListener("click", () => window.print());
-
-  resultSection.classList.remove("hidden");
-  resultSection.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function focusFirstIncomplete() {
-  const incomplete = questions.find((question) => !document.querySelector(`input[name="${question.id}"]:checked`));
-  if (!incomplete) return;
-  document.querySelector(`[data-question="${incomplete.id}"]`)?.scrollIntoView({ behavior: "smooth", block: "center" });
-}
-
-function handleFormChange(event) {
-  if (!(event.target instanceof HTMLInputElement)) return;
-  saveState();
-  updateProgress();
-}
-
-function handleProfileChange() {
-  saveState();
-  updateProgress();
-}
-
-function resetAssessment() {
-  form.reset();
-  localStorage.removeItem(STORAGE_KEY);
-  profileFields.forEach((field) => {
-    const node = document.querySelector(`#${field}`);
-    if (!node) return;
-    if (node.tagName === "SELECT") node.selectedIndex = 0;
-    else node.value = "";
+  document.querySelector("#downloadJsonBtn")?.addEventListener("click", () => {
+    const blob = new Blob([JSON.stringify(state.lastResult, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `ai-diagnosis-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   });
-  updateProgress();
+
+  document.querySelector("#goApplicationBtn")?.addEventListener("click", () => {
+    document.querySelector("#application")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.querySelector("#retakeBtn")?.addEventListener("click", () => {
+    resetAll();
+    document.querySelector("#diagnosis")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.querySelector("#copyApplicationBtn")?.addEventListener("click", async () => {
+    const payload = getApplicationPayload();
+    const text = [
+      "【AI実装度チェック 共有内容】",
+      `会社/部署：${payload.companyName}`,
+      `お名前：${payload.contactName}`,
+      `メール：${payload.contactEmail}`,
+      `確認したい内容：${payload.requestType}`,
+      `希望プログラム：${payload.desiredCourse}`,
+      "",
+      payload.diagnosisSummary,
+      "",
+      `補足：${payload.applicationNote}`
+    ].join("\n");
+    await navigator.clipboard.writeText(text);
+    document.querySelector("#formStatus").textContent = "送信内容をコピーしました。";
+  });
+
+  document.querySelector("#applicationForm")?.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (!validateApplicationForm()) return;
+    const status = document.querySelector("#formStatus");
+    const submitBtn = document.querySelector("#submitApplicationBtn");
+    const payload = getApplicationPayload();
+    submitBtn.disabled = true;
+    status.textContent = "送信しています...";
+    try {
+      const response = await submitToGoogleForms(payload);
+      status.textContent = response.demo
+        ? "送信デモを保存しました。Googleフォーム連携を有効化すると、回答として記録できます。"
+        : "送信しました。診断結果をもとに実施方法を確認できます。";
+      event.target.classList.add("is-submitted");
+    } catch (error) {
+      console.error(error);
+      status.textContent = "送信に失敗しました。時間をおいて再度お試しください。";
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+
+  document.querySelector("#printBtn")?.addEventListener("click", () => window.print());
+}
+
+function validateForm() {
+  const missingIndex = questions.findIndex(q => !state.answers[q.id]);
+  if (missingIndex === -1) return true;
+  goToQuestion(missingIndex);
+  const card = document.querySelector(`[data-question="${questions[missingIndex].id}"]`);
+  card?.scrollIntoView({ behavior: "smooth", block: "center" });
+  card?.animate([
+    { transform: "translateX(0)" },
+    { transform: "translateX(-8px)" },
+    { transform: "translateX(8px)" },
+    { transform: "translateX(0)" }
+  ], { duration: 420, easing: "ease-out" });
+  progressHint.textContent = `未回答があります：Q${String(missingIndex + 1).padStart(2, "0")}`;
+  return false;
+}
+
+function resetAll() {
+  state.answers = {};
+  state.currentIndex = 0;
+  clearStoredProgress();
+  assessmentForm.reset();
+  document.querySelector("#companyName").value = "";
+  document.querySelector("#industry").value = "未選択";
+  document.querySelector("#employeeSize").value = "未選択";
   resultSection.classList.add("hidden");
   resultRoot.innerHTML = "";
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  renderWizard();
 }
 
-function boot() {
-  renderScenes();
-  renderPrograms();
-  renderFlow();
-  renderQuestions();
-  restoreState();
+/* ---------- サンプル結果（回答を破壊しない） ---------- */
+
+function showDemoResult() {
+  if (isComplete()) {
+    renderResult();
+    return;
+  }
+  const snapshot = { ...state.answers };
+  questions.forEach(q => {
+    state.answers[q.id] = q.id === "q1" ? 2 : 4;
+  });
+  renderResult({ demo: true });
+  state.answers = snapshot;
   updateProgress();
+}
 
-  form.addEventListener("change", handleFormChange);
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const result = calculate();
-    if (!result) {
-      alert("未回答の設問があります。すべて回答してください。");
-      focusFirstIncomplete();
-      return;
+/* ---------- 初期化 ---------- */
+
+let initialized = false;
+
+function init() {
+  if (initialized) return;
+  initialized = true;
+  const restored = loadProgressFromStorage();
+  state.currentIndex = restored ? firstUnansweredIndex() : 0;
+  renderWizard();
+  renderCourseCatalog();
+
+  if (restored) {
+    progressHint.textContent = isComplete()
+      ? "前回の回答を復元しました。「診断結果を見る」を押してください。"
+      : `前回の回答を復元しました。あと${questions.length - answeredCount()}問です。`;
+  }
+
+  assessmentForm.addEventListener("change", event => {
+    if (event.target.matches("input[type='radio']")) {
+      handleAnswer(event.target.name, Number(event.target.value));
     }
-    saveState();
-    renderResults(result);
   });
 
-  document.querySelector("#resetBtn").addEventListener("click", resetAssessment);
-  profileFields.forEach((field) => {
-    document.querySelector(`#${field}`)?.addEventListener("input", handleProfileChange);
-    document.querySelector(`#${field}`)?.addEventListener("change", handleProfileChange);
+  assessmentForm.addEventListener("submit", event => {
+    event.preventDefault();
+    if (!validateForm()) return;
+    renderResult();
   });
 
-  document.querySelectorAll("[data-scroll-target]").forEach((button) => {
+  ["companyName", "industry", "employeeSize"].forEach(id => {
+    document.querySelector(`#${id}`)?.addEventListener("change", saveProgressToStorage);
+  });
+
+  prevBtn.addEventListener("click", () => goToQuestion(state.currentIndex - 1));
+  nextBtn.addEventListener("click", () => goToQuestion(state.currentIndex + 1));
+
+  wizardDots.addEventListener("click", event => {
+    const dot = event.target.closest(".wizard-dot");
+    if (dot) goToQuestion(Number(dot.dataset.index));
+  });
+
+  document.addEventListener("keydown", event => {
+    const tag = document.activeElement?.tagName;
+    if (tag === "INPUT" && document.activeElement?.type !== "radio") return;
+    if (tag === "SELECT" || tag === "TEXTAREA") return;
+    const diagnosisSection = document.querySelector("#diagnosis");
+    const rect = diagnosisSection.getBoundingClientRect();
+    const inView = rect.top < window.innerHeight && rect.bottom > 0;
+    if (!inView) return;
+    if (event.key >= "1" && event.key <= "5") {
+      const q = questions[state.currentIndex];
+      const input = document.querySelector(`input[name="${q.id}"][value="${event.key}"]`);
+      if (input) {
+        input.checked = true;
+        handleAnswer(q.id, Number(event.key));
+        event.preventDefault();
+      }
+    } else if (event.key === "ArrowLeft") {
+      goToQuestion(state.currentIndex - 1);
+      event.preventDefault();
+    } else if (event.key === "ArrowRight") {
+      goToQuestion(state.currentIndex + 1);
+      event.preventDefault();
+    }
+  });
+
+  document.querySelector("#resetBtn").addEventListener("click", resetAll);
+
+  document.querySelectorAll("[data-scroll-target]").forEach(button => {
     button.addEventListener("click", () => {
       const target = document.querySelector(button.dataset.scrollTarget);
-      target?.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (resultSection.classList.contains("hidden")) {
+        showDemoResult();
+      } else {
+        target?.scrollIntoView({ behavior: "smooth" });
+      }
     });
   });
 }
 
-document.addEventListener("DOMContentLoaded", boot);
+document.addEventListener("DOMContentLoaded", init);
