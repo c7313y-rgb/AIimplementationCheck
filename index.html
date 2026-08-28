@@ -3,86 +3,83 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AI経営診断カルテ | 中小企業AI導入診断</title>
-  <meta name="description" content="経営者の意思決定・業務負荷・データ活用状況から、AI導入の優先領域と期待効果を診断するWebアプリ。" />
+  <title>AI経営診断カルテ | AIインタビュー型診断</title>
+  <meta name="description" content="経営者への対話型インタビューから、AI導入優先領域・期待効果・90日PoCを自動生成する中小企業向けAI経営診断。" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 <header class="site-header">
-  <a class="brand" href="#top"><span class="brand-badge">AI</span><span><strong>AI経営診断カルテ</strong><small>SME AI Opportunity Diagnostic</small></span></a>
-  <nav><a href="#diagnosis">診断</a><a href="#logic">診断ロジック</a><a class="nav-cta" href="#diagnosis">無料診断を開始</a></nav>
+  <a class="brand" href="#top"><span class="brand-badge">AI</span><span><strong>AI経営診断カルテ</strong><small>Adaptive Executive Interview</small></span></a>
+  <nav><a href="#interview">AIインタビュー</a><a href="#result">診断カルテ</a><a href="#logic">診断ロジック</a><a class="nav-cta" href="#interview">診断を開始</a></nav>
 </header>
 <main id="top">
   <section class="hero">
     <div class="hero-copy">
-      <div class="eyebrow">経営判断 × 業務プロセス × データ × AI</div>
-      <h1>AIを入れるべき会社か。<br><span>どこに入れるべきか。</span><br>経営判断から逆算する。</h1>
-      <p>経営者が「何を実現したいか」「何を基準に判断してきたか」「何の資料を使い、結果はどうだったか」を整理し、AI導入の優先領域と期待効果を可視化します。</p>
-      <div class="hero-actions"><a class="btn primary" href="#diagnosis">診断を始める</a><button class="btn secondary" data-scroll="#sample">診断カルテを見る</button></div>
-      <div class="hero-stats"><div><strong>5</strong><span>診断軸</span></div><div><strong>18</strong><span>質問</span></div><div><strong>3</strong><span>AI化優先領域</span></div><div><strong>90</strong><span>日導入案</span></div></div>
+      <div class="eyebrow">経営者インタビュー → 意思決定分解 → AI適用診断</div>
+      <h1>AIを入れる場所を、<br><span>経営者の「判断」から見つける。</span></h1>
+      <p>経営者が普段どんな判断をし、何を根拠に、どの資料を使い、どこで時間や機会を失っているかを対話形式で整理。AI導入の優先領域と期待効果を診断カルテとして可視化します。</p>
+      <div class="hero-actions"><a class="btn primary" href="#interview">AIインタビューを始める</a><button class="btn secondary" data-scroll="#sample">出力例を見る</button></div>
+      <div class="hero-stats"><div><strong>対話型</strong><span>回答で質問が変化</span></div><div><strong>5軸</strong><span>AI導入評価</span></div><div><strong>TOP3</strong><span>AI化優先領域</span></div><div><strong>90日</strong><span>PoC計画</span></div></div>
     </div>
     <div class="hero-card">
-      <div class="hero-card-head"><span>診断サンプル</span><b>AI導入推奨</b></div>
-      <div class="score-ring"><strong>82</strong><small>/100</small></div>
-      <h3>最優先：営業・見積判断</h3>
-      <p>判断材料は多い一方、担当者依存が強く、過去案件データが十分に再利用されていません。</p>
-      <div class="mini-bars"><span style="--w:88%">効果余地 88</span><span style="--w:74%">データ準備 74</span><span style="--w:62%">実装容易性 62</span></div>
+      <div class="hero-card-head"><span>AI面談プレビュー</span><b>ADAPTIVE</b></div>
+      <div class="chat-preview"><div class="bubble ai">直近で、経営者自身が時間を使って判断した重要案件を1つ教えてください。</div><div class="bubble user">大型案件の見積価格です。過去案件、原価、競合価格をExcelで集めて判断しています。</div><div class="bubble ai">その判断に毎月どれくらい時間がかかり、判断が外れた場合はどんな損失がありますか？</div></div>
     </div>
   </section>
 
   <section class="value-grid">
-    <article><span>01</span><h2>目的から診断</h2><p>「AIを使いたい」からではなく、売上・粗利・生産性・判断品質など経営目標からAI候補を特定します。</p></article>
-    <article><span>02</span><h2>判断プロセスを分解</h2><p>誰が、何を基準に、どの資料を見て、どう判断しているかを分解し、AI化可能な処理を見つけます。</p></article>
-    <article><span>03</span><h2>効果を仮説化</h2><p>削減時間・意思決定速度・売上機会・品質安定化を推定し、投資判断の起点となる診断カルテを生成します。</p></article>
+    <article><span>01</span><h2>自由記述を構造化</h2><p>会話から判断テーマ、判断基準、資料、頻度、工数、属人性、失敗コストを抽出します。</p></article>
+    <article><span>02</span><h2>不足情報を追加質問</h2><p>回答済み項目は飛ばし、ROI算定に足りない情報だけを追加で聞くため、面談が冗長になりません。</p></article>
+    <article><span>03</span><h2>提案起点まで自動生成</h2><p>AIユースケースTOP3、期待効果、データ準備、注意点、90日PoCを1枚の診断カルテにまとめます。</p></article>
   </section>
 
-  <section id="diagnosis" class="diagnosis-section">
-    <div class="section-title"><div class="eyebrow">Assessment</div><h2>AI経営診断</h2><p>経営者または事業責任者が回答してください。約8〜12分を想定しています。</p></div>
-    <div class="diagnosis-layout">
+  <section id="interview" class="interview-section">
+    <div class="section-title"><div class="eyebrow">Adaptive interview</div><h2>AI経営インタビュー</h2><p>短文でも構いません。具体的な数字や資料名が入るほど診断精度が上がります。回答内容はブラウザ内に保存されます。</p></div>
+    <div class="interview-layout">
       <aside>
-        <div class="progress-card"><div><span>進捗</span><strong id="progressText">0%</strong></div><div class="progress"><i id="progressBar"></i></div><p id="progressHint">会社情報を入力してください。</p></div>
         <div class="company-card">
           <label>会社名<input id="companyName" placeholder="例：株式会社〇〇"></label>
           <label>業種<select id="industry"><option value="">選択</option><option>製造</option><option>建設・不動産</option><option>卸売・小売</option><option>サービス</option><option>物流</option><option>宿泊・飲食</option><option>医療・介護</option><option>教育</option><option>IT・通信</option><option>その他</option></select></label>
-          <label>従業員数<select id="employees"><option value="">選択</option><option value="10">1〜10名</option><option value="30">11〜30名</option><option value="80">31〜100名</option><option value="200">101〜300名</option><option value="500">301名以上</option></select></label>
-          <label>年間売上規模<select id="revenue"><option value="">選択</option><option value="50">1億円未満</option><option value="300">1〜5億円</option><option value="800">5〜10億円</option><option value="2000">10〜30億円</option><option value="5000">30億円以上</option></select></label>
+          <label>従業員数<select id="employees"><option value="30">11〜30名</option><option value="10">1〜10名</option><option value="80">31〜100名</option><option value="200">101〜300名</option><option value="500">301名以上</option></select></label>
+          <label>平均人件費（1時間）<input id="hourlyCost" type="number" min="1000" step="100" value="3500"></label>
         </div>
+        <div class="signal-card"><h3>現在の診断材料</h3><div id="signalList"></div></div>
+        <button class="btn secondary full" id="resetInterview">診断をリセット</button>
       </aside>
-      <form id="diagnosisForm" class="wizard">
-        <div class="wizard-top"><span id="stepLabel">STEP 1 / 5</span><span id="questionLabel">質問 1 / 18</span></div>
-        <div id="questionRoot"></div>
-        <div class="wizard-nav"><button type="button" class="btn secondary" id="prevBtn">← 戻る</button><button type="button" class="btn primary" id="nextBtn">次へ →</button></div>
-      </form>
+      <div class="chat-shell">
+        <div class="chat-head"><div><strong>AI経営インタビュアー</strong><small id="phaseLabel">経営目的を確認中</small></div><span id="coverageBadge">情報充足 0%</span></div>
+        <div id="chatLog" class="chat-log" aria-live="polite"></div>
+        <div id="quickChoices" class="quick-choices"></div>
+        <form id="chatForm" class="chat-form">
+          <textarea id="chatInput" rows="3" placeholder="回答を入力してください。例：見積判断。過去案件のExcelと仕入先見積を見て、月20件、1件30分程度です。"></textarea>
+          <div class="chat-actions"><small>Enterで送信 / Shift+Enterで改行</small><button class="btn primary" type="submit">回答を送る</button></div>
+        </form>
+      </div>
     </div>
   </section>
 
+  <section id="readiness" class="readiness-section hidden">
+    <div class="section-title"><div class="eyebrow">Implementation readiness</div><h2>導入条件を4項目だけ確認</h2><p>インタビュー結果に、実装可否を左右するデータ・責任者・PoC・リスク条件を加えます。</p></div>
+    <div id="readinessRoot" class="readiness-grid"></div>
+    <div class="center"><button id="generateBtn" class="btn primary big">AI経営診断カルテを生成</button></div>
+  </section>
+
   <section id="result" class="result-section hidden">
-    <div class="section-title"><div class="eyebrow">Diagnostic chart</div><h2>AI経営診断カルテ</h2><p>以下は入力内容から算出した導入仮説です。数値はPoC前の概算であり、実績値を保証するものではありません。</p></div>
+    <div class="section-title"><div class="eyebrow">Diagnostic chart</div><h2>AI経営診断カルテ</h2><p>入力内容をもとにした導入仮説です。効果額はPoC前の推定レンジであり、保証値ではありません。</p></div>
     <div id="resultRoot"></div>
   </section>
 
   <section id="sample" class="sample-section">
-    <div class="section-title"><div class="eyebrow">Output</div><h2>診断後に分かること</h2></div>
-    <div class="sample-grid">
-      <article><b>AI導入適性</b><strong>0–100</strong><p>経営課題・反復性・判断負荷・データ・実装難易度を統合評価。</p></article>
-      <article><b>優先領域TOP3</b><strong>業務別</strong><p>営業、見積、採用、顧客対応、管理業務などから優先順位を提示。</p></article>
-      <article><b>期待効果</b><strong>時間・金額</strong><p>削減時間、意思決定速度、粗利改善余地をレンジで推定。</p></article>
-      <article><b>90日ロードマップ</b><strong>PoC</strong><p>データ確認→業務定義→試作→検証→定着までの次の一手。</p></article>
-    </div>
+    <div class="section-title"><div class="eyebrow">Output</div><h2>診断カルテに含まれる情報</h2></div>
+    <div class="sample-grid"><article><b>経営課題</b><strong>判断単位</strong><p>経営者が時間を使っている重要判断を具体的な業務単位で表示。</p></article><article><b>AI導入適性</b><strong>0–100</strong><p>経営インパクト・AI適合性・データ・実装容易性・推進条件を評価。</p></article><article><b>効果仮説</b><strong>時間・金額</strong><p>月間削減時間、年間時間価値、判断速度改善、失敗コスト削減余地をレンジ表示。</p></article><article><b>次の提案</b><strong>90日PoC</strong><p>対象業務、必要データ、検証KPI、実装ステップを提案材料として整理。</p></article></div>
   </section>
 
   <section id="logic" class="logic-section">
-    <div class="section-title"><div class="eyebrow">Scoring model</div><h2>診断ロジック</h2></div>
-    <div class="logic-grid">
-      <article><h3>① 経営インパクト</h3><p>売上、粗利、コスト、スピード、品質への寄与余地を評価。</p></article>
-      <article><h3>② AI適合性</h3><p>反復業務、文章・画像・数値処理、予測、照合、判断支援の適合度。</p></article>
-      <article><h3>③ データ準備度</h3><p>Excel、基幹システム、メール、PDF等の蓄積量・品質・取得可能性。</p></article>
-      <article><h3>④ 実装容易性</h3><p>権限、個人情報、既存システム連携、現場変更負荷を評価。</p></article>
-      <article><h3>⑤ 経営コミット</h3><p>経営者の目的明確性、担当者、予算、検証姿勢を評価。</p></article>
-    </div>
+    <div class="section-title"><div class="eyebrow">Scoring model</div><h2>第2段階の診断ロジック</h2></div>
+    <div class="logic-grid"><article><h3>① 経営インパクト</h3><p>頻度、工数、関与人数、判断失敗時の影響、経営目標との近さ。</p></article><article><h3>② AI適合性</h3><p>文章・PDF・Excel・検索・比較・予測・定型判断などAIが扱いやすい処理か。</p></article><article><h3>③ データ準備度</h3><p>過去データの量、デジタル化、アクセス性、形式の統一度。</p></article><article><h3>④ 実装容易性</h3><p>PoC可能性、既存システム依存、機密・個人情報・規制リスク。</p></article><article><h3>⑤ 推進条件</h3><p>経営者の優先度、責任者、効果測定への姿勢、現場の受容性。</p></article></div>
   </section>
 </main>
-<footer>AI経営診断カルテ / SME AI Opportunity Diagnostic</footer>
+<footer>AI経営診断カルテ v2 / Adaptive Executive Interview</footer>
 <script src="script.js"></script>
 </body>
 </html>
