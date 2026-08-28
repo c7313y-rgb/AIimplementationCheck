@@ -2,327 +2,87 @@
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>AI実装度チェック | AI Readiness Canvas</title>
-  <meta name="description" content="自社のAI実装度を可視化し、次に強化すべき業務・人材・ルール・実装テーマを整理する診断ツール。" />
-  <meta property="og:title" content="AI実装度チェック | AI Readiness Canvas" />
-  <meta property="og:description" content="AI活用の現在地を可視化し、次に強化すべき実践テーマと学習プランを整理します。" />
-  <meta property="og:type" content="website" />
-  <meta property="og:image" content="./ai-diagnostic-app-final-photo-refresh/assets/og-ai-readiness.jpg" />
-  <link rel="stylesheet" href="./styles.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AI経営診断カルテ | 中小企業AI導入診断</title>
+  <meta name="description" content="経営者の意思決定・業務負荷・データ活用状況から、AI導入の優先領域と期待効果を診断するWebアプリ。" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="noise" aria-hidden="true"></div>
-  <header class="site-header">
-    <a class="brand" href="#top" aria-label="AI実装度チェックトップへ">
-      <span class="brand-mark">AI</span>
-      <span><strong>AI実装度チェック</strong><small>AI Readiness Canvas</small></span>
-    </a>
-    <nav class="top-nav" aria-label="主要メニュー">
-      <a href="#diagnosis">診断</a>
-      <a href="#logic">診断の見方</a>
-      <a href="#courses">実践プログラム</a>
-      <a href="#application-guide">結果の活用</a>
-      <a class="nav-cta" href="#diagnosis">チェックを開始</a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <section class="hero section-grid">
-      <div class="hero-copy">
-        <div class="eyebrow">AI readiness · Productivity · Implementation · Governance</div>
-        <h1>自社のAI実装度を、<br />見える化する。</h1>
-        <p class="lead">業務改善、AI実装、収益化、安全利用、人材育成の現在地を約3分で整理。次に強化すべきテーマと、90日で進める実践プランを確認できます。</p>
-        <div class="hero-actions">
-          <a class="primary-btn" href="#diagnosis">チェックを開始する</a>
-          <button class="ghost-btn" type="button" data-scroll-target="#preview">結果イメージを見る</button>
-        </div>
-        <div class="hero-metrics" aria-label="診断で可視化する項目">
-          <div><strong>5</strong><span>重点スコア</span></div>
-          <div><strong>3</strong><span>推奨講座</span></div>
-          <div><strong>90</strong><span>日プラン</span></div>
-        </div>
-      </div>
-      <div class="hero-visual" aria-label="AI実装度チェックのビジュアルプレビュー">
-        <div class="photo-stack">
-          <figure class="photo-card photo-hero">
-            <figcaption>AI実装ロードマップ</figcaption>
-          </figure>
-          <figure class="photo-card photo-dashboard">
-            <figcaption>業務改善ダッシュボード</figcaption>
-          </figure>
-          <figure class="photo-card photo-office">
-            <figcaption>AIエージェント設計</figcaption>
-          </figure>
-        </div>
-        <div class="floating-panel">
-          <span class="pulse"></span>
-          <div><strong>AI実装度</strong><small>Readiness / 82</small></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section stats-strip" aria-label="アプリの特徴">
-      <article>
-        <span>01</span>
-        <h2>AI実装度を可視化</h2>
-        <p>業務負荷、属人化、データ整備、安全利用、推進体制をスコア化し、次に整えるべき領域を明確にします。</p>
-      </article>
-      <article>
-        <span>02</span>
-        <h2>強化テーマを整理</h2>
-        <p>収益化・業務改善・AI実装・ガバナンス・基礎理解のどこから着手すべきかを表示します。</p>
-      </article>
-      <article>
-        <span>03</span>
-        <h2>結果を社内検討に活用</h2>
-        <p>診断結果、希望テーマ、連絡先をフォーム連携し、社内共有や次回打ち合わせの材料として活用できます。</p>
-      </article>
-    </section>
-
-    <section id="diagnosis" class="section diagnostic-shell">
-      <div class="section-heading compact">
-        <div class="eyebrow">Assessment</div>
-        <h2>AI実装度チェック</h2>
-        <p>15問・約3分。1問ずつ回答すると自動で次の設問へ進みます。回答は自動保存されるため、途中で離れても続きから再開できます。</p>
-      </div>
-
-      <div class="app-layout">
-        <aside class="diagnosis-sidebar" aria-label="診断進捗">
-          <div class="progress-card">
-            <div class="progress-top"><span>進捗</span><strong id="progressText">0%</strong></div>
-            <div class="progress-bar" aria-hidden="true"><span id="progressBar"></span></div>
-            <p id="progressHint">最初の設問から回答してください。</p>
-          </div>
-          <div class="profile-card">
-            <label for="companyName">会社名 / 部署名</label>
-            <input id="companyName" placeholder="例：株式会社〇〇 DX推進室" autocomplete="organization" />
-            <label for="industry">業種</label>
-            <select id="industry">
-              <option value="未選択">選択してください</option>
-              <option>製造</option>
-              <option>小売・流通</option>
-              <option>不動産・建設</option>
-              <option>教育・人材</option>
-              <option>金融・保険</option>
-              <option>医療・介護</option>
-              <option>自治体・公共</option>
-              <option>IT・通信</option>
-              <option>その他</option>
-            </select>
-            <label for="employeeSize">従業員規模</label>
-            <select id="employeeSize">
-              <option value="未選択">選択してください</option>
-              <option>1〜30名</option>
-              <option>31〜100名</option>
-              <option>101〜300名</option>
-              <option>301〜1,000名</option>
-              <option>1,001名以上</option>
-            </select>
-          </div>
-          <div class="sidebar-note">
-            <strong>チェック後の活用</strong>
-            <p>結果画面で推奨プログラムと90日プランを確認できます。必要に応じて結果を送信し、社内検討や実施方法の確認に使えます。</p>
-          </div>
-        </aside>
-
-        <form id="assessmentForm" class="question-list" novalidate>
-          <div class="wizard">
-            <div class="wizard-head">
-              <span class="wizard-counter" id="wizardCounter">設問 1 / 15</span>
-              <div class="wizard-dots" id="wizardDots" aria-label="設問ナビゲーション"></div>
-            </div>
-            <div id="questionsContainer"></div>
-            <div class="wizard-nav">
-              <button type="button" id="prevBtn" class="ghost-btn">← 前の設問</button>
-              <span class="wizard-keys" aria-hidden="true">1〜5キーで選択 / ←→で移動</span>
-              <button type="button" id="nextBtn" class="ghost-btn">次の設問 →</button>
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="button" id="resetBtn" class="ghost-btn">リセット</button>
-            <button type="submit" id="submitDiagnosisBtn" class="primary-btn">診断結果を見る</button>
-          </div>
-        </form>
-      </div>
-    </section>
-
-    <section id="preview" class="section result-section hidden" aria-live="polite">
-      <div class="section-heading compact">
-        <div class="eyebrow">Result</div>
-        <h2>診断結果</h2>
-        <p>AI活用の現在地・強化テーマ・次の実践ステップを可視化します。</p>
-      </div>
-      <div id="resultRoot"></div>
-    </section>
-
-    <section id="logic" class="section logic-section">
-      <div class="section-heading">
-        <div class="eyebrow">Readiness design</div>
-        <h2>診断結果の見方</h2>
-        <p>診断結果は「今の状態」「先に整える領域」「次に試す実践テーマ」を分けて表示します。</p>
-      </div>
-      <div class="logic-grid">
-        <article>
-          <span class="logic-icon">△</span>
-          <h3>現在地の言語化</h3>
-          <p>業務負荷・属人化・データ分散・安全利用の課題を、社内で共有しやすい言葉に整理します。</p>
-        </article>
-        <article>
-          <span class="logic-icon">◎</span>
-          <h3>効果測定の入口化</h3>
-          <p>AI活用を感覚で終わらせず、時間削減・品質向上・売上貢献・安全利用の指標に接続します。</p>
-        </article>
-        <article>
-          <span class="logic-icon">▣</span>
-          <h3>学びの順番を整理</h3>
-          <p>基礎理解、業務改善、実装、収益化、ガバナンスのうち、いま優先すべき順番を表示します。</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="application-guide" class="section application-guide">
-      <div class="section-heading">
-        <div class="eyebrow">Result sharing</div>
-        <h2>診断結果を、次のAI実装計画へ</h2>
-        <p>診断結果、希望テーマ、連絡先をGoogleフォームへ送信できます。結果を残すことで、社内共有・日程調整・実施方法の確認がしやすくなります。</p>
-      </div>
-      <div class="logic-grid">
-        <article>
-          <span class="logic-icon">01</span>
-          <h3>診断結果を確認</h3>
-          <p>AI実装度、強化テーマ、推奨プログラム、90日アクションを確認します。</p>
-        </article>
-        <article>
-          <span class="logic-icon">02</span>
-          <h3>希望テーマを選択</h3>
-          <p>資料確認、実施方法の確認、社内共有用の見積、自社テーマでの設計などを選べます。</p>
-        </article>
-        <article>
-          <span class="logic-icon">03</span>
-          <h3>フォームで記録</h3>
-          <p>診断サマリーと連絡先をフォーム回答として記録。スプレッドシートで管理できます。</p>
-        </article>
-      </div>
-    </section>
-
-    <section id="courses" class="section courses-section">
-      <div class="section-heading">
-        <div class="eyebrow">Practice programs</div>
-        <h2>AI実装度に応じた実践プログラム</h2>
-        <p>診断結果に応じて表示するプログラムです。基礎理解から業務実装、収益化、安全利用まで段階的に選べます。</p>
-      </div>
-      <div id="courseCatalog" class="course-catalog"></div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div>
-      <strong>AI実装度チェック</strong>
-      <p>AI Readiness Canvas / GitHub Pages ready</p>
+<header class="site-header">
+  <a class="brand" href="#top"><span class="brand-badge">AI</span><span><strong>AI経営診断カルテ</strong><small>SME AI Opportunity Diagnostic</small></span></a>
+  <nav><a href="#diagnosis">診断</a><a href="#logic">診断ロジック</a><a class="nav-cta" href="#diagnosis">無料診断を開始</a></nav>
+</header>
+<main id="top">
+  <section class="hero">
+    <div class="hero-copy">
+      <div class="eyebrow">経営判断 × 業務プロセス × データ × AI</div>
+      <h1>AIを入れるべき会社か。<br><span>どこに入れるべきか。</span><br>経営判断から逆算する。</h1>
+      <p>経営者が「何を実現したいか」「何を基準に判断してきたか」「何の資料を使い、結果はどうだったか」を整理し、AI導入の優先領域と期待効果を可視化します。</p>
+      <div class="hero-actions"><a class="btn primary" href="#diagnosis">診断を始める</a><button class="btn secondary" data-scroll="#sample">診断カルテを見る</button></div>
+      <div class="hero-stats"><div><strong>5</strong><span>診断軸</span></div><div><strong>18</strong><span>質問</span></div><div><strong>3</strong><span>AI化優先領域</span></div><div><strong>90</strong><span>日導入案</span></div></div>
     </div>
-    <a href="#top">ページ上部へ</a>
-  </footer>
+    <div class="hero-card">
+      <div class="hero-card-head"><span>診断サンプル</span><b>AI導入推奨</b></div>
+      <div class="score-ring"><strong>82</strong><small>/100</small></div>
+      <h3>最優先：営業・見積判断</h3>
+      <p>判断材料は多い一方、担当者依存が強く、過去案件データが十分に再利用されていません。</p>
+      <div class="mini-bars"><span style="--w:88%">効果余地 88</span><span style="--w:74%">データ準備 74</span><span style="--w:62%">実装容易性 62</span></div>
+    </div>
+  </section>
 
-  <template id="resultTemplate">
-    <div class="result-grid">
-      <section class="score-hero">
-        <div class="score-ring" id="urgencyRing"><span id="urgencyScore">0</span></div>
-        <div>
-          <div class="eyebrow">AI Readiness Score</div>
-          <h3 id="resultTitle">AI実装度スコア</h3>
-          <p id="resultSummary"></p>
-          <div class="result-badges" id="resultBadges"></div>
+  <section class="value-grid">
+    <article><span>01</span><h2>目的から診断</h2><p>「AIを使いたい」からではなく、売上・粗利・生産性・判断品質など経営目標からAI候補を特定します。</p></article>
+    <article><span>02</span><h2>判断プロセスを分解</h2><p>誰が、何を基準に、どの資料を見て、どう判断しているかを分解し、AI化可能な処理を見つけます。</p></article>
+    <article><span>03</span><h2>効果を仮説化</h2><p>削減時間・意思決定速度・売上機会・品質安定化を推定し、投資判断の起点となる診断カルテを生成します。</p></article>
+  </section>
+
+  <section id="diagnosis" class="diagnosis-section">
+    <div class="section-title"><div class="eyebrow">Assessment</div><h2>AI経営診断</h2><p>経営者または事業責任者が回答してください。約8〜12分を想定しています。</p></div>
+    <div class="diagnosis-layout">
+      <aside>
+        <div class="progress-card"><div><span>進捗</span><strong id="progressText">0%</strong></div><div class="progress"><i id="progressBar"></i></div><p id="progressHint">会社情報を入力してください。</p></div>
+        <div class="company-card">
+          <label>会社名<input id="companyName" placeholder="例：株式会社〇〇"></label>
+          <label>業種<select id="industry"><option value="">選択</option><option>製造</option><option>建設・不動産</option><option>卸売・小売</option><option>サービス</option><option>物流</option><option>宿泊・飲食</option><option>医療・介護</option><option>教育</option><option>IT・通信</option><option>その他</option></select></label>
+          <label>従業員数<select id="employees"><option value="">選択</option><option value="10">1〜10名</option><option value="30">11〜30名</option><option value="80">31〜100名</option><option value="200">101〜300名</option><option value="500">301名以上</option></select></label>
+          <label>年間売上規模<select id="revenue"><option value="">選択</option><option value="50">1億円未満</option><option value="300">1〜5億円</option><option value="800">5〜10億円</option><option value="2000">10〜30億円</option><option value="5000">30億円以上</option></select></label>
         </div>
-      </section>
-      <section class="radar-card">
-        <canvas id="radarCanvas" width="520" height="360" aria-label="診断スコアのレーダーチャート"></canvas>
-        <div class="radar-legend" id="radarLegend"></div>
-      </section>
-    </div>
-    <div class="risk-message" id="riskMessage"></div>
-    <div class="kpi-grid" id="kpiGrid"></div>
-    <div class="recommendation-block">
-      <div class="section-heading compact align-left">
-        <div class="eyebrow">Recommended practice path</div>
-        <h2>推奨実践プログラム TOP3</h2>
-        <p>スコアに基づき、最初に整えるべきテーマと次に展開する実践プログラムを提示します。</p>
-      </div>
-      <div id="recommendations" class="recommendations"></div>
-    </div>
-    <div class="roadmap-block">
-      <div class="section-heading compact align-left">
-        <div class="eyebrow">90 days action</div>
-        <h2>90日アクションプラン</h2>
-      </div>
-      <div id="roadmap" class="roadmap"></div>
-    </div>
-    <div id="application" class="application-block">
-      <div class="section-heading compact align-left">
-        <div class="eyebrow">Next step</div>
-        <h2>AI実装プランの共有</h2>
-        <p>診断結果を添えて送信できます。実施方法、対象者、期間、社内共有用の資料確認に活用できます。</p>
-      </div>
-      <form id="applicationForm" class="application-form" novalidate>
-        <div class="form-grid-2">
-          <label>
-            <span>お名前 <b>必須</b></span>
-            <input id="contactName" name="contactName" placeholder="例：山田 太郎" autocomplete="name" required />
-          </label>
-          <label>
-            <span>メールアドレス <b>必須</b></span>
-            <input id="contactEmail" name="contactEmail" type="email" placeholder="example@company.co.jp" autocomplete="email" required />
-          </label>
-          <label>
-            <span>電話番号</span>
-            <input id="contactPhone" name="contactPhone" placeholder="03-0000-0000" autocomplete="tel" />
-          </label>
-          <label>
-            <span>役職 / 部署</span>
-            <input id="contactRole" name="contactRole" placeholder="例：人事部 / DX推進室 / 代表取締役" />
-          </label>
-          <label>
-            <span>確認したい内容 <b>必須</b></span>
-            <select id="requestType" name="requestType" required>
-              <option value="">選択してください</option>
-              <option>資料請求</option>
-              <option>実施方法を確認したい</option>
-              <option>実践プログラムを検討したい</option>
-              <option>社内共有用の見積を確認したい</option>
-              <option>自社テーマで設計したい</option>
-            </select>
-          </label>
-          <label>
-            <span>希望講座</span>
-            <select id="desiredCourse" name="desiredCourse"></select>
-          </label>
-        </div>
-        <label class="full-field">
-          <span>補足・実施したいテーマ</span>
-          <textarea id="applicationNote" name="applicationNote" rows="4" placeholder="例：管理職向けに短時間で実施したい / まずは営業部門でAI活用を試したい / オンデマンドと対面を組み合わせたい"></textarea>
-        </label>
-        <label class="consent-field">
-          <input id="privacyConsent" type="checkbox" required />
-          <span>入力内容と診断結果を、実施方法の確認・日程調整・社内共有用資料作成のために送信することに同意します。</span>
-        </label>
-        <div class="application-summary" id="applicationSummary"></div>
-        <div class="result-actions application-actions">
-          <button id="submitApplicationBtn" class="primary-btn" type="submit">AI実装プランとして送信する</button>
-          <button id="copyApplicationBtn" class="ghost-btn" type="button">送信内容をコピー</button>
-        </div>
-        <p class="form-status" id="formStatus" role="status"></p>
+      </aside>
+      <form id="diagnosisForm" class="wizard">
+        <div class="wizard-top"><span id="stepLabel">STEP 1 / 5</span><span id="questionLabel">質問 1 / 18</span></div>
+        <div id="questionRoot"></div>
+        <div class="wizard-nav"><button type="button" class="btn secondary" id="prevBtn">← 戻る</button><button type="button" class="btn primary" id="nextBtn">次へ →</button></div>
       </form>
     </div>
+  </section>
 
-    <div class="result-actions">
-      <button id="copyResultBtn" class="primary-btn" type="button">診断結果をコピー</button>
-      <button id="downloadJsonBtn" class="ghost-btn" type="button">JSON保存</button>
-      <button id="goApplicationBtn" class="primary-btn" type="button">結果を共有する</button>
-      <button id="printBtn" class="ghost-btn" type="button">印刷 / PDF化</button>
-      <button id="retakeBtn" class="ghost-btn" type="button">もう一度診断する</button>
+  <section id="result" class="result-section hidden">
+    <div class="section-title"><div class="eyebrow">Diagnostic chart</div><h2>AI経営診断カルテ</h2><p>以下は入力内容から算出した導入仮説です。数値はPoC前の概算であり、実績値を保証するものではありません。</p></div>
+    <div id="resultRoot"></div>
+  </section>
+
+  <section id="sample" class="sample-section">
+    <div class="section-title"><div class="eyebrow">Output</div><h2>診断後に分かること</h2></div>
+    <div class="sample-grid">
+      <article><b>AI導入適性</b><strong>0–100</strong><p>経営課題・反復性・判断負荷・データ・実装難易度を統合評価。</p></article>
+      <article><b>優先領域TOP3</b><strong>業務別</strong><p>営業、見積、採用、顧客対応、管理業務などから優先順位を提示。</p></article>
+      <article><b>期待効果</b><strong>時間・金額</strong><p>削減時間、意思決定速度、粗利改善余地をレンジで推定。</p></article>
+      <article><b>90日ロードマップ</b><strong>PoC</strong><p>データ確認→業務定義→試作→検証→定着までの次の一手。</p></article>
     </div>
-  </template>
+  </section>
 
-  <script src="./script.js"></script>
+  <section id="logic" class="logic-section">
+    <div class="section-title"><div class="eyebrow">Scoring model</div><h2>診断ロジック</h2></div>
+    <div class="logic-grid">
+      <article><h3>① 経営インパクト</h3><p>売上、粗利、コスト、スピード、品質への寄与余地を評価。</p></article>
+      <article><h3>② AI適合性</h3><p>反復業務、文章・画像・数値処理、予測、照合、判断支援の適合度。</p></article>
+      <article><h3>③ データ準備度</h3><p>Excel、基幹システム、メール、PDF等の蓄積量・品質・取得可能性。</p></article>
+      <article><h3>④ 実装容易性</h3><p>権限、個人情報、既存システム連携、現場変更負荷を評価。</p></article>
+      <article><h3>⑤ 経営コミット</h3><p>経営者の目的明確性、担当者、予算、検証姿勢を評価。</p></article>
+    </div>
+  </section>
+</main>
+<footer>AI経営診断カルテ / SME AI Opportunity Diagnostic</footer>
+<script src="script.js"></script>
 </body>
 </html>
