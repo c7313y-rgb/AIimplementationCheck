@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AI経営診断カルテ | AIインタビュー型診断</title>
   <meta name="description" content="経営者への対話型インタビューから、AI導入優先領域・期待効果・90日PoCを自動生成する中小企業向けAI経営診断。" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,16 +18,32 @@
 </header>
 <main id="top">
   <section class="hero">
+    <div class="hero-bg" aria-hidden="true"></div>
     <div class="hero-copy">
       <div class="eyebrow">経営者インタビュー → 意思決定分解 → AI適用診断</div>
       <h1>AIを入れる場所を、<br><span>経営者の「判断」から見つける。</span></h1>
       <p>経営者が普段どんな判断をし、何を根拠に、どの資料を使い、どこで時間や機会を失っているかを対話形式で整理。AI導入の優先領域と期待効果を診断カルテとして可視化します。</p>
-      <div class="hero-actions"><a class="btn primary" href="#interview">AIインタビューを始める</a><button class="btn secondary" data-scroll="#sample">出力例を見る</button></div>
+      <div class="hero-actions"><a class="btn primary" href="#interview">AIインタビューを始める</a><button class="btn secondary ghost" data-scroll="#sample">出力例を見る</button></div>
       <div class="hero-stats"><div><strong>対話型</strong><span>回答で質問が変化</span></div><div><strong>5軸</strong><span>AI導入評価</span></div><div><strong>TOP3</strong><span>AI化優先領域</span></div><div><strong>90日</strong><span>PoC計画</span></div></div>
     </div>
     <div class="hero-card">
       <div class="hero-card-head"><span>AI面談プレビュー</span><b>ADAPTIVE</b></div>
-      <div class="chat-preview"><div class="bubble ai">直近で、経営者自身が時間を使って判断した重要案件を1つ教えてください。</div><div class="bubble user">大型案件の見積価格です。過去案件、原価、競合価格をExcelで集めて判断しています。</div><div class="bubble ai">その判断に毎月どれくらい時間がかかり、判断が外れた場合はどんな損失がありますか？</div></div>
+      <div class="chat-preview">
+        <div class="bubble ai">直近で、経営者自身が時間を使って判断した重要案件を1つ教えてください。</div>
+        <div class="bubble user">大型案件の見積価格です。過去案件、原価、競合価格をExcelで集めて判断しています。</div>
+        <div class="bubble ai">その判断に毎月どれくらい時間がかかり、判断が外れた場合はどんな損失がありますか？</div>
+        <div class="typing"><i></i><i></i><i></i></div>
+      </div>
+      <div class="hero-card-foot">AIが回答をリアルタイムで構造化します</div>
+    </div>
+  </section>
+
+  <section class="journey">
+    <div class="section-title light"><div class="eyebrow">Experience</div><h2>悩みから、90日後の実装まで。</h2><p>「AIを使いたい。でも何から？」——その問いに、対話が答えます。</p></div>
+    <div class="journey-grid">
+      <article class="journey-card"><img src="assets/scene-interview.png" alt="AIインタビュー体験" loading="lazy"><div><b>STEP 1</b><h3>AIに話す</h3><p>難しいAI知識は不要。自社の仕事と判断について、自然な言葉で答えるだけです。</p></div></article>
+      <article class="journey-card"><img src="assets/scene-result.png" alt="診断カルテの可視化" loading="lazy"><div><b>STEP 2</b><h3>自社が見える</h3><p>5軸スコア・優先領域TOP3・効果仮説が1枚のカルテに。強化すべき場所が一目で分かります。</p></div></article>
+      <article class="journey-card"><img src="assets/scene-workshop-mapping.jpg" alt="90日PoCワークショップ" loading="lazy"><div><b>STEP 3</b><h3>90日で始める</h3><p>診断で終わらない。データ整備からPoC検証、本導入判断までの道筋を提示します。</p></div></article>
     </div>
   </section>
 
@@ -77,6 +97,14 @@
   <section id="logic" class="logic-section">
     <div class="section-title"><div class="eyebrow">Scoring model</div><h2>第2段階の診断ロジック</h2></div>
     <div class="logic-grid"><article><h3>① 経営インパクト</h3><p>頻度、工数、関与人数、判断失敗時の影響、経営目標との近さ。</p></article><article><h3>② AI適合性</h3><p>文章・PDF・Excel・検索・比較・予測・定型判断などAIが扱いやすい処理か。</p></article><article><h3>③ データ準備度</h3><p>過去データの量、デジタル化、アクセス性、形式の統一度。</p></article><article><h3>④ 実装容易性</h3><p>PoC可能性、既存システム依存、機密・個人情報・規制リスク。</p></article><article><h3>⑤ 推進条件</h3><p>経営者の優先度、責任者、効果測定への姿勢、現場の受容性。</p></article></div>
+  </section>
+
+  <section class="cta-band">
+    <div class="cta-band-inner">
+      <h2>まず、自社の「AIで伸びる場所」を知ることから。</h2>
+      <p>約10分の対話で、あなたの会社のAI経営診断カルテをお届けします。</p>
+      <a class="btn primary big" href="#interview">無料で診断を始める</a>
+    </div>
   </section>
 </main>
 <footer>AI経営診断カルテ v2 / Adaptive Executive Interview</footer>
