@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#082b36">
+  <meta name="description" content="株式会社RCG AI経営実装診断パートナーポータル。取引先、金融機関・自治体、連携パートナーを権限別に分離したデモアプリ。">
+  <title>AI経営実装パートナーポータル | 株式会社RCG</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23082b36'/%3E%3Cpath d='M8 22 16 7l8 15h-4l-4-8-4 8z' fill='%237de0cd'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="loginView" class="login-shell">
+    <div class="login-art">
+      <div class="art-glow"></div>
+      <div class="login-art-content">
+        <div class="eyebrow light-eyebrow">RCG PARTNER PORTAL</div>
+        <h1>地域企業のAI実装を、<span>役割ごとに</span>つなぐ。</h1>
+        <p>取引先の診断、金融機関・自治体の伴走、連携パートナーの実装管理を一つのポータルで分離。案内元とサービス提供者の責任範囲を、いつでも確認できます。</p>
+        <div class="login-art-points"><span>権限別ワークスペース</span><span>診断IDで追跡</span><span>デモはブラウザ内完結</span></div>
+      </div>
+      <img src="../assets/hero-ai-consult.png" alt="AI実装の相談イメージ" class="login-visual" onerror="this.onerror=null;this.src='assets/hero-ai-consult.png'">
+    </div>
+    <div class="login-panel">
+      <div class="login-brand"><span class="brand-mark">RCG</span><div><strong>AI経営実装</strong><small>Partner Portal</small></div></div>
+      <div class="login-copy"><span class="eyebrow">Secure demo sign-in</span><h2>アカウントでログイン</h2><p>権限に応じて表示されるページと操作を分離しています。</p></div>
+      <form id="loginForm" class="login-form">
+        <label>ユーザー名<input id="loginUsername" autocomplete="username" placeholder="例：client.demo" required></label>
+        <label>パスワード<input id="loginPassword" type="password" autocomplete="current-password" placeholder="デモアカウントのパスワード" required></label>
+        <button class="btn primary full" type="submit">ログイン</button>
+        <p id="loginError" class="form-error" role="alert"></p>
+      </form>
+      <section class="demo-accounts" aria-label="デモアカウント">
+        <div class="demo-heading"><strong>デモ専用アカウント</strong><span>クリックで入力</span></div>
+        <button class="demo-account" type="button" data-demo="client"><span class="role-icon client-icon">C</span><span><b>取引先企業</b><small>診断を入力・自社カルテを確認</small></span></button>
+        <button class="demo-account" type="button" data-demo="institution"><span class="role-icon institution-icon">I</span><span><b>金融機関・自治体</b><small>紹介企業の進捗・面談候補を確認</small></span></button>
+        <button class="demo-account" type="button" data-demo="partner"><span class="role-icon partner-icon">P</span><span><b>RCG・連携パートナー</b><small>案件・提供体制・実装状況を確認</small></span></button>
+      </section>
+      <div class="demo-note"><strong>デモ環境について</strong><p>認証情報は画面のデモ体験用です。本番ではSSO／サーバー認証、監査ログ、組織ごとのデータ分離を実装してください。入力はこのブラウザ内にのみ保存されます。</p></div>
+      <a class="official-link" href="https://rcg2020.co.jp/" target="_blank" rel="noopener">株式会社RCG 公式サイトを確認 ↗</a>
+    </div>
+  </div>
+
+  <div id="appView" class="app-shell hidden">
+    <header class="app-header">
+      <a class="app-brand" href="#dashboard"><span class="brand-mark">RCG</span><span><strong>AI経営実装ポータル</strong><small id="headerOrganization">地域企業支援プログラム</small></span></a>
+      <div class="header-actions"><span class="session-chip"><i></i><b id="headerRole">デモ</b><span id="headerUser">user</span></span><button id="logoutBtn" class="logout-btn" type="button">ログアウト</button></div>
+    </header>
+    <div class="demo-strip"><span>DEMO</span><p>このポータルはデモ認証です。本番利用では組織SSO・権限管理・監査ログを接続してください。</p><button id="demoInfoBtn" type="button">運用上の注意</button></div>
+    <main id="mainContent" class="main-content">
+      <section id="clientView" class="role-view hidden">
+        <div class="page-heading"><div><span class="eyebrow">Client workspace</span><h1>自社のAI実装候補を診断する</h1><p>経営者の重要な判断を1つ選び、効果が出る場所から小さく始めます。</p></div><div class="heading-context"><span>ご案内</span><strong id="clientInstitutionName">地域金融機関・自治体連携（デモ）</strong><small>サービス提供：株式会社RCG</small></div></div>
+        <div class="client-grid">
+          <section class="panel diagnosis-panel">
+            <div class="panel-heading"><div><span class="step-label">STEP 1 / 5</span><h2>経営インタビュー</h2></div><span id="clientProgress">0%</span></div>
+            <form id="diagnosisForm" class="diagnosis-form">
+              <label><span>1. 今後1〜2年で最も改善したいこと</span><select id="clientGoal" required><option value="">選択してください</option><option value="sales">売上・受注を増やしたい</option><option value="margin">粗利・利益を改善したい</option><option value="productivity">人手不足・生産性を改善したい</option><option value="quality">品質・判断精度を安定させたい</option></select></label>
+              <label><span>2. 重要な判断を1つ、普段の言葉で</span><textarea id="clientDecision" rows="3" placeholder="例：大型案件の見積価格。過去案件と原価を見て社長が決めています。" required></textarea></label>
+              <fieldset><legend>3. 判断に使う資料（複数可）</legend><div class="check-grid"><label><input type="checkbox" name="clientMaterial" value="Excel"><span>Excel</span></label><label><input type="checkbox" name="clientMaterial" value="PDF"><span>PDF・見積書</span></label><label><input type="checkbox" name="clientMaterial" value="メール"><span>メール</span></label><label><input type="checkbox" name="clientMaterial" value="基幹"><span>基幹システム</span></label><label><input type="checkbox" name="clientMaterial" value="紙"><span>紙・帳票</span></label><label><input type="checkbox" name="clientMaterial" value="CRM"><span>CRM・SFA</span></label></div></fieldset>
+              <div class="two-col"><label><span>4. 月間件数</span><input id="clientFrequency" type="number" min="1" placeholder="20" required></label><label><span>1件の工数（分）</span><input id="clientMinutes" type="number" min="1" placeholder="30" required></label></div>
+              <div class="two-col"><label><span>5. 推進責任者</span><select id="clientOwner"><option value="3">候補はいる</option><option value="5">すぐ決められる</option><option value="1">まだ未定</option></select></label><label><span>機密・規制リスク</span><select id="clientRisk"><option value="2">低い</option><option value="3">要確認</option><option value="5">高い</option></select></label></div>
+              <label class="client-save-option"><input id="clientRemember" type="checkbox"><span>この端末に入力途中を保存する</span></label>
+              <button class="btn primary" type="submit">診断カルテを作成</button>
+            </form>
+          </section>
+          <aside class="client-aside"><div class="panel reassurance-panel"><div class="reassurance-icon">✓</div><h3>診断の考え方</h3><ul><li>AI導入ありきではなく、売上・利益・工数から評価</li><li>入力は外部APIへ送信しない</li><li>結果は初期仮説。90日PoCで実測</li></ul></div><div class="panel process-mini"><span class="eyebrow">Your route</span><h3>診断後の流れ</h3><div><b>01</b><span>カルテを確認</span></div><div><b>02</b><span>案内元と次回面談</span></div><div><b>03</b><span>小さなPoCを実施</span></div></div></aside>
+        </div>
+        <section id="clientResult" class="panel client-result hidden"></section>
+      </section>
+
+      <section id="institutionView" class="role-view hidden">
+        <div class="page-heading"><div><span class="eyebrow">Institution workspace</span><h1>紹介企業の進捗を確認する</h1><p>診断IDと最小限のサマリーをもとに、次の面談・支援へつなぎます。</p></div><div class="heading-context"><span>窓口</span><strong id="institutionOrgName">地域金融機関・自治体連携（デモ）</strong><small>サービス提供：株式会社RCG</small></div></div>
+        <div class="metric-row" id="institutionMetrics"></div>
+        <div class="workspace-grid"><section class="panel case-list-panel"><div class="panel-heading"><div><span class="eyebrow">Referral pipeline</span><h2>紹介企業一覧</h2></div><select id="institutionFilter" aria-label="案件フィルター"><option value="all">すべて</option><option value="new">新規診断</option><option value="meeting">面談準備</option><option value="poc">PoC候補</option></select></div><div id="institutionCaseList" class="case-list"></div></section><section id="institutionCaseDetail" class="panel case-detail"><div class="empty-state"><span>↗</span><h3>企業を選択してください</h3><p>一覧から診断カルテを選ぶと、面談に必要な要点が表示されます。</p></div></section></div>
+        <div class="governance-callout"><strong>確認範囲を最小限に</strong><p>金融機関・自治体画面では、取引先の回答全文や機密情報を表示せず、診断ID・優先領域・効果仮説・次回確認項目だけを共有します。</p></div>
+      </section>
+
+      <section id="partnerView" class="role-view hidden">
+        <div class="page-heading"><div><span class="eyebrow">Partner workspace</span><h1>連携パートナー運用コンソール</h1><p>RCGをサービス提供者として、診断案件と実装体制の品質を横断確認します。</p></div><div class="heading-context"><span>サービス提供者</span><strong>株式会社RCG</strong><small>AI実装・導入支援：Edutex株式会社</small></div></div>
+        <div class="metric-row" id="partnerMetrics"></div>
+        <div class="partner-grid"><section class="panel partner-pipeline"><div class="panel-heading"><div><span class="eyebrow">All referrals</span><h2>案件ポートフォリオ</h2></div><button id="exportCsvBtn" class="btn secondary small-btn" type="button">CSVを書き出す</button></div><div id="partnerCaseTable" class="partner-table"></div></section><section class="panel registry-panel"><div class="panel-heading"><div><span class="eyebrow">Registry</span><h2>提供体制レジストリ</h2></div></div><div id="partnerRegistry" class="registry-list"></div></section></div>
+        <section class="panel partner-principles"><span class="eyebrow">Operating principles</span><h2>本番導入へ移行する際の確認</h2><div class="principle-grid"><div><b>01</b><strong>組織分離</strong><span>テナント・部署・案件単位で閲覧権限を分離</span></div><div><b>02</b><strong>監査可能性</strong><span>診断ID・版数・操作ログをサーバー側で保管</span></div><div><b>03</b><strong>支援連携</strong><span>RCG、Edutex、提携先の役割と契約範囲を明記</span></div><div><b>04</b><strong>データ保護</strong><span>機密区分、保管期間、削除請求の運用を定義</span></div></div></section>
+      </section>
+    </main>
+    <footer class="app-footer"><span><b>株式会社RCG</b> AI経営実装ポータル</span><span>デモ版 / 本番ではサーバー認証へ接続</span><a href="https://rcg2020.co.jp/" target="_blank" rel="noopener">公式サイト ↗</a></footer>
+  </div>
+  <dialog id="demoInfoDialog"><button class="dialog-close" type="button" aria-label="閉じる">×</button><span class="eyebrow">Demo governance</span><h2>本番化前に追加するもの</h2><p>このGitHub Pages版は役割別UIのデモです。実際の金融機関・自治体運用では、認証サーバー、組織ごとのテナント分離、暗号化、監査ログ、同意・削除フローを追加してください。</p><ul><li>パスワードをブラウザに配置しない</li><li>診断データをブラウザlocalStorageだけで共有しない</li><li>紹介元・RCG・実装パートナーの責任分界を契約と画面で一致させる</li></ul></dialog>
+  <script src="partner-config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
