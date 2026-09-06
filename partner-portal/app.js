@@ -8,7 +8,7 @@ let currentAccount = null;
 let selectedCaseId = '';
 
 const sampleCases = [
-  { id: 'AIC-20260903-7C31', company: '東海精密工業（デモ）', industry: '製造', institutionKey: 'regional-demo', score: 76, status: 'meeting', priority: '見積・原価・価格決定', hours: '18〜41h/月', risk: '中：要確認', owner: '営業部長候補', updatedAt: '2026/09/03', summary: '過去案件と原価をExcelで比較する見積判断。月20件・1件30分・3名で、資料検索と判断の属人化が課題。', next: '匿名化した見積20件と現状KPIを確認' },
+  { id: 'AIC-20260903-7C31', company: '東海精密工業（デモ）', industry: '製造', institutionKey: 'regional-demo', score: 76, status: 'meeting', priority: '見積・原価・価格決定', hours: '6〜12h/月', risk: '中：要確認', owner: '営業部長候補', updatedAt: '2026/09/03', summary: '過去案件と原価をExcelで比較する見積判断。月20件・1件30分・3名で、資料検索と判断の属人化が課題。', next: '匿名化した見積20件と現状KPIを確認' },
   { id: 'AIC-20260902-19AF', company: 'みなと食品販売（デモ）', industry: '卸売・小売', institutionKey: 'regional-demo', score: 64, status: 'poc', priority: '顧客・受注判断', hours: '12〜27h/月', risk: '低：標準確認', owner: '販売責任者', updatedAt: '2026/09/02', summary: '受注メールと在庫表の確認を担当者が手作業で実施。欠品と返信遅れを減らしたい。', next: '受注メール50件で検索・要約のPoC' },
   { id: 'AIC-20260829-50D2', company: '北星建設（デモ）', industry: '建設・不動産', institutionKey: 'regional-demo', score: 48, status: 'new', priority: '工程・原価管理', hours: '要実測', risk: '高：専門確認', owner: '未定', updatedAt: '2026/08/29', summary: '紙帳票と現場写真が分散し、工数と判断基準が未整理。まず業務・データ棚卸しが必要。', next: '機密区分とデータ保管先を先に確認' }
 ];
@@ -116,7 +116,7 @@ function renderInstitution() {
 function renderInstitutionDetail(item) {
   const root = $('institutionCaseDetail');
   if (!item) { root.innerHTML = '<div class="empty-state"><span>↗</span><h3>企業を選択してください</h3><p>一覧から診断カルテを選ぶと、面談に必要な要点が表示されます。</p></div>'; return; }
-  root.innerHTML = `<div class="detail-head"><div><small>${esc(item.id)}</small><h3>${esc(item.company)}</h3><small>${esc(item.industry)} / 最終更新 ${esc(item.updatedAt || '')}</small></div><span class="status-pill ${statusClass(item.status)}">${esc(item.statusLabel)}</span></div><div class="detail-grid"><div class="detail-item"><span>AI導入適性</span><strong>${item.score}/100</strong></div><div class="detail-item"><span>優先領域</span><strong>${esc(item.priority)}</strong></div><div class="detail-item"><span>削減時間の仮説</span><strong>${esc(item.hours)}</strong></div><div class="detail-item"><span>情報管理</span><strong>${esc(item.risk)}</strong></div></div><div class="detail-note"><strong>診断サマリー</strong><br>${esc(item.summary || 'サマリーは次回面談で確認')}</div><div class="detail-note"><strong>次回確認</strong><br>${esc(item.next || '推進責任者、データ、KPI、機密区分を確認')}</div><div class="detail-actions"><button class="btn primary" id="markMeetingBtn" type="button">面談準備にする</button><button class="btn secondary" id="institutionPrintBtn" type="button">印刷</button></div>`;
+  root.innerHTML = `<div class="detail-head"><div><small>${esc(item.id)}</small><h3>${esc(item.company)}</h3><small>${esc(item.industry)} / 最終更新 ${esc(item.updatedAt || '')}</small></div><span class="status-pill ${statusClass(item.status)}">${esc(item.statusLabel)}</span></div><div class="detail-grid"><div class="detail-item"><span>実証準備度（独自目安）</span><strong>${item.score}/100</strong></div><div class="detail-item"><span>優先領域</span><strong>${esc(item.priority)}</strong></div><div class="detail-item"><span>削減時間の仮説</span><strong>${esc(item.hours)}</strong></div><div class="detail-item"><span>情報管理</span><strong>${esc(item.risk)}</strong></div></div><div class="detail-note"><strong>診断サマリー</strong><br>${esc(item.summary || 'サマリーは次回面談で確認')}</div><div class="detail-note"><strong>次回確認</strong><br>${esc(item.next || '推進責任者、データ、KPI、機密区分を確認')}</div><div class="detail-actions"><button class="btn primary" id="markMeetingBtn" type="button">面談準備にする</button><button class="btn secondary" id="institutionPrintBtn" type="button">印刷</button></div>`;
   $('markMeetingBtn').onclick = () => { saveStatus(item.id, item.status === 'poc' ? 'poc' : 'meeting'); showToast('案件ステータスを更新しました。'); renderInstitution(); };
   $('institutionPrintBtn').onclick = printActiveView;
 }
@@ -161,4 +161,3 @@ $('institutionFilter').addEventListener('change', () => { selectedCaseId = ''; r
 
 const session = getSession();
 if (session && accountFor(session.accountKey)) login(accountFor(session.accountKey));
-

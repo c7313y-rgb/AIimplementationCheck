@@ -4,6 +4,13 @@
   if (typeof original !== 'function') return;
   const urgencyNote = '調査レポートでは、AIを個人利用や文書作成だけで止めず、反復業務へ組み込める企業ほど効果を測りやすい傾向が示されています。導入済みのツール数ではなく、1業務の時間・品質・売上指標で比較します。';
   window.showClientResult = function(item){
+    if(item.version !== 'industry-v3') {
+      const legacy=document.getElementById('clientResult');
+      legacy.classList.remove('hidden');
+      legacy.innerHTML=`<h2>以前の診断データがあります</h2><p>評価項目が更新されました。上の業種別診断に回答すると、新しい基準のカルテを作成できます。以前の結果を新版の点数や効果試算として表示することはありません。</p><p>診断ID：${esc(item.id)}</p><button type="button" class="btn secondary" id="legacyExport">以前の診断をJSON保存</button>`;
+      legacy.querySelector('#legacyExport').onclick=()=>downloadChart(item);
+      return;
+    }
     original(item);
     const root = document.getElementById('clientResult');
     if (!root || root.querySelector('.implementation-plan')) return;
