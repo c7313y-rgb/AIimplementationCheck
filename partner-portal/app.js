@@ -40,7 +40,7 @@ function getCases() {
   let own = [];
   try { own = JSON.parse(localStorage.getItem(CASES_KEY) || '[]'); } catch { own = []; }
   const overrides = getStatusOverrides();
-  return [...sampleCases, ...own].map(item => ({ ...item, status: overrides[item.id] || item.status, statusLabel: statusLabel(overrides[item.id] || item.status) }));
+  return [...sampleCases, ...own.filter(item => item.shareConsent === true)].map(item => ({ ...item, status: overrides[item.id] || item.status, statusLabel: statusLabel(overrides[item.id] || item.status) }));
 }
 function saveStatus(id, status) {
   const overrides = getStatusOverrides();
@@ -101,78 +101,6 @@ function renderApp() {
   $('institutionOrgName').textContent = institution.name;
 }
 
-function renderClient() {
-  const draftKey = `${DRAFT_PREFIX}${currentAccount.username}`;
-  let draft = {};
-  try { draft = JSON.parse(localStorage.getItem(draftKey) || '{}'); } catch { draft = {}; }
-  ['clientGoal', 'clientDecision', 'clientFrequency', 'clientMinutes', 'clientOwner', 'clientRisk'].forEach(id => { if (draft[id] !== undefined) $(id).value = draft[id]; });
-  if (Array.isArray(draft.materials)) document.querySelectorAll('input[name="clientMaterial"]').forEach(input => { input.checked = draft.materials.includes(input.value); });
-  if (draft.remember !== undefined) $('clientRemember').checked = draft.remember;
-  updateClientProgress();
-  const ownCase = getCases().filter(item => item.ownerAccount === currentAccount.username).sort((a, b) => String(b.createdAt).localeCompare(String(a.createdAt)))[0];
-  if (ownCase) showClientResult(ownCase);
-}
-function clientDraft() {
-  return {
-    clientGoal: $('clientGoal').value,
-    clientDecision: $('clientDecision').value,
-    clientFrequency: $('clientFrequency').value,
-    clientMinutes: $('clientMinutes').value,
-    clientOwner: $('clientOwner').value,
-    clientRisk: $('clientRisk').value,
-    materials: Array.from(document.querySelectorAll('input[name="clientMaterial"]:checked'), input => input.value),
-    remember: $('clientRemember').checked
-  };
-}
-function updateClientProgress() {
-  const draft = clientDraft();
-  const values = [draft.clientGoal, draft.clientDecision, draft.materials.length, draft.clientFrequency, draft.clientMinutes];
-  const progress = Math.round(values.filter(Boolean).length / values.length * 100);
-  $('clientProgress').textContent = `${progress}%`;
-}
-function saveClientDraft() {
-  const draft = clientDraft();
-  if (draft.remember) localStorage.setItem(`${DRAFT_PREFIX}${currentAccount.username}`, JSON.stringify(draft));
-  else localStorage.removeItem(`${DRAFT_PREFIX}${currentAccount.username}`);
-  updateClientProgress();
-}
-function calculateClientCase(draft) {
-  const goalWeight = { sales: 18, margin: 20, productivity: 19, quality: 15 }[draft.clientGoal] || 0;
-  const materialWeight = Math.min(18, draft.materials.length * 4);
-  const loadWeight = Math.min(20, Number(draft.clientFrequency || 0) * 0.3 + Number(draft.clientMinutes || 0) * 0.25);
-  const repeatability = draft.clientFrequency && draft.clientMinutes ? 13 : 4;
-  const riskPenalty = Math.max(0, Number(draft.clientRisk || 3) - 2) * 4;
-  const score = Math.max(0, Math.min(100, Math.round(28 + goalWeight + materialWeight + loadWeight + repeatability + Number(draft.clientOwner || 3) * 3 - riskPenalty)));
-  const status = Number(draft.clientRisk) >= 5 ? 'meeting' : score >= 62 ? 'poc' : score >= 45 ? 'meeting' : 'new';
-  const hoursLow = Math.round(Number(draft.clientFrequency || 8) * Number(draft.clientMinutes || 30) / 60 * .2);
-  const hoursHigh = Math.round(Number(draft.clientFrequency || 8) * Number(draft.clientMinutes || 30) / 60 * .45);
-  const priority = draft.clientGoal === 'margin' ? '見積・原価・価格決定' : draft.clientGoal === 'sales' ? '営業・案件判断' : draft.clientGoal === 'productivity' ? '定型処理・業務運用' : '品質・判断精度向上';
-  return { score, status, priority, hours: `${hoursLow}〜${hoursHigh}h/月`, risk: Number(draft.clientRisk) >= 5 ? '高：専門確認' : Number(draft.clientRisk) >= 3 ? '中：要確認' : '低：標準確認', next: status === 'poc' ? '匿名化したサンプル20〜50件と現状KPIを案内元と確認' : '業務フローとデータの棚卸しから開始' };
-}
-function submitClientDiagnosis(event) {
-  event.preventDefault();
-  const draft = clientDraft();
-  if (!draft.materials.length) { showToast('判断材料を1つ以上選択してください。'); return; }
-  const result = calculateClientCase(draft);
-  const now = new Date();
-  const id = `AIC-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${randomId()}`;
-  const item = { id, company: currentAccount.organization, industry: '業種未入力', institutionKey: currentAccount.institutionKey, ownerAccount: currentAccount.username, createdAt: now.toISOString(), updatedAt: now.toISOString(), decision: draft.clientDecision, materials: draft.materials, frequency: draft.clientFrequency, minutes: draft.clientMinutes, ...result, summary: `${draft.clientDecision} 資料：${draft.materials.join('・')}。月${draft.clientFrequency}件・1件${draft.clientMinutes}分。`, statusLabel: statusLabel(result.status) };
-  let cases = [];
-  try { cases = JSON.parse(localStorage.getItem(CASES_KEY) || '[]'); } catch { cases = []; }
-  cases = cases.filter(existing => existing.ownerAccount !== currentAccount.username);
-  cases.unshift(item);
-  localStorage.setItem(CASES_KEY, JSON.stringify(cases));
-  localStorage.removeItem(`${DRAFT_PREFIX}${currentAccount.username}`);
-  showClientResult(item);
-  showToast(`診断ID ${id} のカルテを作成しました。`);
-}
-function showClientResult(item) {
-  const root = $('clientResult');
-  root.classList.remove('hidden');
-  root.innerHTML = `<span class="eyebrow">Your diagnostic chart</span><h2>AI経営診断カルテ</h2><div class="result-score"><div class="score-number">${item.score}<small>/100</small></div><div><strong>${esc(statusLabel(item.status))}</strong><p>優先領域：${esc(item.priority)}。まずは限定業務のPoCで効果を実測します。</p></div></div><div class="result-next"><div><strong>診断ID</strong><span>${esc(item.id)}</span></div><div><strong>月間削減時間の仮説</strong><span>${esc(item.hours)}</span></div><div><strong>次の一歩</strong><span>${esc(item.next)}</span></div></div><p>このカルテは融資・補助金採択・導入効果を保証するものではありません。次回面談で、匿名化データ、KPI、機密区分を確認してください。</p><button class="btn secondary" id="clientPrintBtn" type="button">カルテを印刷 / PDF保存</button>`;
-  $('clientPrintBtn').onclick = printActiveView;
-}
-
 function metricCard(label, value, note) { return `<article class="metric-card"><span>${label}</span><strong>${value}</strong><small>${note}</small></article>`; }
 function renderInstitution() {
   const cases = getCases().filter(item => item.institutionKey === currentAccount.institutionKey);
@@ -221,6 +149,7 @@ function printActiveView() {
 function openDemoInfo() { const dialog = $('demoInfoDialog'); if (dialog.showModal) dialog.showModal(); else dialog.setAttribute('open', ''); }
 function closeDemoInfo() { const dialog = $('demoInfoDialog'); if (dialog.close) dialog.close(); else dialog.removeAttribute('open'); }
 
+setupIndustryFlow();
 applyConfig();
 $('loginForm').addEventListener('submit', attemptLogin);
 document.querySelectorAll('[data-demo]').forEach(button => button.addEventListener('click', () => fillDemo(button.dataset.demo)));
@@ -228,10 +157,8 @@ $('logoutBtn').addEventListener('click', logout);
 $('demoInfoBtn').addEventListener('click', openDemoInfo);
 document.querySelector('.dialog-close').addEventListener('click', closeDemoInfo);
 $('diagnosisForm').addEventListener('submit', submitClientDiagnosis);
-['clientGoal', 'clientDecision', 'clientFrequency', 'clientMinutes', 'clientOwner', 'clientRisk', 'clientRemember'].forEach(id => $(id).addEventListener('input', updateClientProgress));
-document.querySelectorAll('input[name="clientMaterial"]').forEach(input => input.addEventListener('change', updateClientProgress));
-document.querySelectorAll('#diagnosisForm input, #diagnosisForm select, #diagnosisForm textarea').forEach(input => input.addEventListener('change', saveClientDraft));
 $('institutionFilter').addEventListener('change', () => { selectedCaseId = ''; renderInstitution(); });
 
 const session = getSession();
 if (session && accountFor(session.accountKey)) login(accountFor(session.accountKey));
+

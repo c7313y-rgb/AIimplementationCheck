@@ -7,7 +7,9 @@
   <meta name="description" content="株式会社RCG AI経営実装診断パートナーポータル。取引先、金融機関・自治体、連携パートナーを権限別に分離したデモアプリ。">
   <title>AI経営実装パートナーポータル | 株式会社RCG</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23082b36'/%3E%3Cpath d='M8 22 16 7l8 15h-4l-4-8-4 8z' fill='%237de0cd'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="styles.css?v=20260905-readable">
+  <link rel="stylesheet" href="styles.css?v=20260906-industry">
+  <link rel="stylesheet" href="industry-flow.css?v=20260906-industry">
+  <link rel="stylesheet" href="industry-enhancements.css?v=20260906-decision">
 </head>
 <body>
   <div id="loginView" class="login-shell">
@@ -15,11 +17,15 @@
       <div class="art-glow"></div>
       <div class="login-art-content">
         <div class="eyebrow light-eyebrow">RCG PARTNER PORTAL</div>
-        <h1>地域企業のAI実装を、<span>役割ごとに</span>つなぐ。</h1>
-        <p>取引先の診断、金融機関・自治体の伴走、連携パートナーの実装管理を一つのポータルで分離。案内元とサービス提供者の責任範囲を、いつでも確認できます。</p>
-        <div class="login-art-points"><span>権限別ワークスペース</span><span>診断IDで追跡</span><span>デモはブラウザ内完結</span></div>
+        <h1>その悩みを、<span>AIで変える</span>最初の一歩。</h1>
+        <p>見積の遅れ、情報探し、日々の転記。あなたの業種に合う診断で、売上・利益につながる改善を見つけましょう。カルテを見て、AIを体験して、小さく試す。</p>
+        <div class="login-art-points"><span>12業種に対応</span><span>効果を見える化</span><span>診断後にAI実務体験</span></div>
       </div>
-      <img src="../assets/hero-ai-consult.png" alt="AI実装の相談イメージ" class="login-visual" onerror="this.onerror=null;this.src='assets/hero-ai-consult.png'">
+      <div class="login-visual" role="img" aria-label="AI実装の相談イメージ">
+        <div class="visual-orbit orbit-one"></div><div class="visual-orbit orbit-two"></div>
+        <div class="visual-core"><span>AI</span><small>IMPLEMENT</small></div>
+        <span class="visual-chip chip-one">業務データ</span><span class="visual-chip chip-two">効果測定</span><span class="visual-chip chip-three">小さくPoC</span>
+      </div>
     </div>
     <div class="login-panel">
       <div class="login-brand"><span class="brand-mark">RCG</span><div><strong>AI経営実装</strong><small>Partner Portal</small></div></div>
@@ -49,10 +55,10 @@
     <div class="demo-strip"><span>DEMO</span><p>このポータルはデモ認証です。本番利用では組織SSO・権限管理・監査ログを接続してください。</p><button id="demoInfoBtn" type="button">運用上の注意</button></div>
     <main id="mainContent" class="main-content">
       <section id="clientView" class="role-view hidden">
-        <div class="page-heading"><div><span class="eyebrow">Client workspace</span><h1>自社のAI実装候補を診断する</h1><p>経営者の重要な判断を1つ選び、効果が出る場所から小さく始めます。</p></div><div class="heading-context"><span>ご案内</span><strong id="clientInstitutionName">地域金融機関・自治体連携（デモ）</strong><small>サービス提供：株式会社RCG</small></div></div>
+        <div class="page-heading"><div><span class="eyebrow">Client workspace</span><h1>あなたの仕事に、AIの可能性を。</h1><p>業種 → 悩み → 現状 → 準備。4ステップで、最初に試す業務を見つけます。</p></div><div class="heading-context"><span>ご案内</span><strong id="clientInstitutionName">地域金融機関・自治体連携（デモ）</strong><small>サービス提供：株式会社RCG</small></div></div>
         <div class="client-grid">
           <section class="panel diagnosis-panel">
-            <div class="panel-heading"><div><span class="step-label">STEP 1 / 5</span><h2>経営インタビュー</h2></div><span id="clientProgress">0%</span></div>
+            <div class="panel-heading"><div><span class="step-label">STEP 1 / 4</span><h2>業種別 AI経営実装診断</h2></div><span id="clientProgress">0%</span></div>
             <form id="diagnosisForm" class="diagnosis-form">
               <label><span>1. 今後1〜2年で最も改善したいこと</span><select id="clientGoal" required><option value="">選択してください</option><option value="sales">売上・受注を増やしたい</option><option value="margin">粗利・利益を改善したい</option><option value="productivity">人手不足・生産性を改善したい</option><option value="quality">品質・判断精度を安定させたい</option></select></label>
               <label><span>2. 重要な判断を1つ、普段の言葉で</span><textarea id="clientDecision" rows="3" placeholder="例：大型案件の見積価格。過去案件と原価を見て社長が決めています。" required></textarea></label>
@@ -73,6 +79,7 @@
         <div class="metric-row" id="institutionMetrics"></div>
         <div class="workspace-grid"><section class="panel case-list-panel"><div class="panel-heading"><div><span class="eyebrow">Referral pipeline</span><h2>紹介企業一覧</h2></div><select id="institutionFilter" aria-label="案件フィルター"><option value="all">すべて</option><option value="new">新規診断</option><option value="meeting">面談準備</option><option value="poc">PoC候補</option></select></div><div id="institutionCaseList" class="case-list"></div></section><section id="institutionCaseDetail" class="panel case-detail"><div class="empty-state"><span>↗</span><h3>企業を選択してください</h3><p>一覧から診断カルテを選ぶと、面談に必要な要点が表示されます。</p></div></section></div>
         <div class="governance-callout"><strong>確認範囲を最小限に</strong><p>金融機関・自治体画面では、取引先の回答全文や機密情報を表示せず、診断ID・優先領域・効果仮説・次回確認項目だけを共有します。</p></div>
+        <section class="panel proposal-kit"><span class="eyebrow">REFERRAL TALK TRACK</span><h2>取引先への提案は、この3分で。</h2><p class="proposal-lead">AI導入ありきではなく、経営課題を数字にして「小さく試す」相談として案内できます。</p><div class="proposal-steps"><article><b>01</b><strong>悩みを聞く</strong><span>業種別の診断で、見積・受注・品質・採用など最初のテーマを選びます。</span></article><article><b>02</b><strong>効果を見える化</strong><span>月間件数・工数・関与人数から、削減時間の仮説をその場で確認します。</span></article><article><b>03</b><strong>体験して判断</strong><span>AIエージェントを体験し、要件定義と90日PoCの相談へつなげます。</span></article></div><p class="proposal-footnote">説明時の注意：スコアと削減時間は初期仮説です。最終的な効果・費用対効果はPoCで実測します。</p></section>
       </section>
 
       <section id="partnerView" class="role-view hidden">
@@ -86,6 +93,8 @@
   </div>
   <dialog id="demoInfoDialog"><button class="dialog-close" type="button" aria-label="閉じる">×</button><span class="eyebrow">Demo governance</span><h2>本番化前に追加するもの</h2><p>このGitHub Pages版は役割別UIのデモです。実際の金融機関・自治体運用では、認証サーバー、組織ごとのテナント分離、暗号化、監査ログ、同意・削除フローを追加してください。</p><ul><li>パスワードをブラウザに配置しない</li><li>診断データをブラウザlocalStorageだけで共有しない</li><li>紹介元・RCG・実装パートナーの責任分界を契約と画面で一致させる</li></ul></dialog>
   <script src="partner-config.js"></script>
-  <script src="app.js"></script>
+  <script src="industry-flow.js?v=20260906-industry"></script>
+  <script src="industry-enhancements.js?v=20260906-decision"></script>
+  <script src="app.js?v=20260906-industry"></script>
 </body>
 </html>

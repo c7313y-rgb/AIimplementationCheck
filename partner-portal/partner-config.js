@@ -28,3 +28,4 @@ window.RCG_PORTAL_CONFIG = {
     { key: 'partner', username: 'partner.demo', password: 'partner2026!', role: 'partner', label: 'RCG・連携パートナー', organization: '株式会社RCG パートナーデスク', institutionKey: 'regional-demo' }
   ]
 };
+
